@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0b10" />
+<title>New Quanthoms -- Billboard Agency (BANQ)</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+<script src="js/app.js"></script>
+</head>
+<body>
+
+<!-- Header -->
+<header class="banq-header">
+  <div class="banq-container banq-header-inner">
+    <a href="/" class="banq-logo">
+      <img src="assets/logo.svg" alt="BANQ" />
+      <span>New Quanthoms</span>
+    </a>
+    <nav class="banq-nav">
+      <a href="/">Feed</a>
+      <a href="billboards.html">Billboards</a>
+      <a href="about.html">About</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+    <div id="banqUserArea"></div>
+  </div>
+</header>
+
+<!-- Main layout -->
+<div class="banq-container">
+  <div class="banq-layout">
+
+    <!-- Feed column -->
+    <main class="banq-feed">
+      <div class="banq-feed-header">
+        <div class="banq-feed-title">Billboard Feed</div>
+        <div class="banq-feed-filters">
+          <button class="banq-filter-chip active" data-filter="all">All</button>
+          <button class="banq-filter-chip" data-filter="image">Banners</button>
+          <button class="banq-filter-chip" data-filter="video">Video</button>
+        </div>
+      </div>
+      <div id="banqFeedGrid"></div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="banq-sidebar">
+      <div class="banq-sidebar-card" id="banqBonusCard">
+        <div class="banq-sidebar-title">Daily Bonus</div>
+        <div class="banq-progress">
+          <div class="banq-progress-bar" id="banqProgressBar" style="width:0%"></div>
+        </div>
+        <div class="banq-progress-text" id="banqProgressText">Sign in to track clicks</div>
+        <div class="banq-progress-bonus">20 unique clicks = 40 QC bonus</div>
+      </div>
+      <div class="banq-sidebar-card">
+        <div class="banq-sidebar-title">Billboard Locations</div>
+        <div class="banq-billboard-item">
+          <div class="banq-billboard-icon">&#128205;</div>
+          <div>
+            <div class="banq-billboard-name">Lagos Island</div>
+            <div class="banq-billboard-loc">Nigeria</div>
+          </div>
+          <div class="banq-billboard-price">$500/wk</div>
+        </div>
+        <div class="banq-billboard-item">
+          <div class="banq-billboard-icon">&#128205;</div>
+          <div>
+            <div class="banq-billboard-name">London Underground</div>
+            <div class="banq-billboard-loc">UK</div>
+          </div>
+          <div class="banq-billboard-price">1.2K GBP/wk</div>
+        </div>
+        <div class="banq-billboard-item">
+          <div class="banq-billboard-icon">&#128205;</div>
+          <div>
+            <div class="banq-billboard-name">Times Square</div>
+            <div class="banq-billboard-loc">New York, USA</div>
+          </div>
+          <div class="banq-billboard-price">$3K/wk</div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="banq-footer">
+  <div class="banq-container">
+    New Quanthoms Billboard Agency (BANQ) -- A Quanthom Lumina company.
+    In partnership with <a href="https://github.com/sonubiowodunni/qwkbrowser">QwkBrowser</a>.
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // Placeholder mock banners (Rules 14, 33, 35 -- page never empty)
+  var MOCK_BANNERS = [
+    { id: 'mock-1', title: 'Summer Tech Sale', advertiser: 'TechMart', image_url: '', target_url: '#', units_reward: 10, type: 'image', mock: true },
+    { id: 'mock-2', title: 'New Music Drop', advertiser: 'SoundWave', image_url: '', target_url: '#', units_reward: 15, type: 'image', mock: true },
+    { id: 'mock-3', title: 'Crypto Trading Tips', advertiser: 'BlockChain Academy', image_url: '', target_url: '#', units_reward: 12, type: 'video', mock: true },
+    { id: 'mock-4', title: 'Fashion Week Preview', advertiser: 'StyleHub', image_url: '', target_url: '#', units_reward: 10, type: 'image', mock: true },
+    { id: 'mock-5', title: 'Game Launch Trailer', advertiser: 'PixelForge', image_url: '', target_url: '#', units_reward: 20, type: 'video', mock: true },
+    { id: 'mock-6', title: 'Travel Deals 2026', advertiser: 'Wanderlust', image_url: '', target_url: '#', units_reward: 10, type: 'image', mock: true },
+    { id: 'mock-7', title: 'Food Delivery Promo', advertiser: 'QuickBite', image_url: '', target_url: '#', units_reward: 10, type: 'image', mock: true },
+    { id: 'mock-8', title: 'Fitness Challenge', advertiser: 'FitLife', image_url: '', target_url: '#', units_reward: 15, type: 'video', mock: true }
+  ];
+
+  // Gradient backgrounds for placeholder banners
+  var GRADIENTS = [
+    'linear-gradient(135deg, #f0a340 0%, #e89220 100%)',
+    'linear-gradient(135deg, #4f6ef7 0%, #6364d8 100%)',
+    'linear-gradient(135deg, #38c98a 0%, #2a9e6e 100%)',
+    'linear-gradient(135deg, #a478f0 0%, #8654d8 100%)',
+    'linear-gradient(135deg, #e84d6a 0%, #c83a56 100%)',
+    'linear-gradient(135deg, #f0a340 0%, #ffc14d 100%)',
+    'linear-gradient(135deg, #4f6ef7 0%, #38c98a 100%)',
+    'linear-gradient(135deg, #a478f0 0%, #f0a340 100%)'
+  ];
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function renderUserArea() {
+    var area = document.getElementById('banqUserArea');
+    if (!area) return;
+    if (BANQ.signedIn()) {
+      var user = BANQ.getUser();
+      var name = user ? (user.username || 'User') : 'User';
+      area.innerHTML =
+        '<div class="banq-user-badge">' +
+          '<span>' + esc(name) + '</span>' +
+          '<span class="banq-balance" id="banqBalance">--</span>' +
+        '</div>' +
+        '<button class="banq-signin-btn" id="banqLogoutBtn" style="margin-left:8px">Sign Out</button>';
+      var btn = document.getElementById('banqLogoutBtn');
+      if (btn) btn.addEventListener('click', function() { BANQ.logout(); });
+      loadBalance();
+    } else {
+      area.innerHTML = '<a href="login.html" class="banq-signin-btn">Sign In</a>';
+    }
+  }
+
+  function loadBalance() {
+    if (!BANQ.signedIn()) return;
+    BANQ.fetchJson('/profile/me').then(function(data) {
+      if (data && data.user) {
+        var el = document.getElementById('banqBalance');
+        if (el) {
+          var qu = data.user.qu_balance || 0;
+          var qc = data.user.qc_balance || 0;
+          el.textContent = qu + ' QU / ' + qc + ' QC';
+        }
+      }
+    }).catch(function() {});
+  }
+
+  function renderFeed(banners, filter) {
+    var grid = document.getElementById('banqFeedGrid');
+    if (!grid) return;
+    filter = filter || 'all';
+
+    if (!banners || !banners.length) {
+      banners = MOCK_BANNERS;
+    }
+
+    var filtered = banners.filter(function(b) {
+      if (filter === 'all') return true;
+      if (filter === 'video') return (b.type === 'video' || (b.mock && b.type === 'video'));
+      if (filter === 'image') return (b.type !== 'video');
+      return true;
+    });
+
+    if (!filtered.length) filtered = MOCK_BANNERS;
+
+    grid.innerHTML = filtered.map(function(b, i) {
+      var isMock = b.mock || false;
+      var rewardText = '+' + (b.units_reward || 10) + (b.type === 'video' ? ' QC' : ' QU');
+      var rewardClass = b.type === 'video' ? 'banq-reward-qc' : '';
+      var grad = GRADIENTS[i % GRADIENTS.length];
+      var mediaHtml;
+      if (b.image_url) {
+        mediaHtml = '<img src="' + esc(b.image_url) + '" alt="' + esc(b.title || '') + '" />';
+      } else {
+        mediaHtml = '<div class="banq-placeholder-bg" style="background:' + grad + '">' + esc(b.advertiser || 'BANQ') + '</div>';
+      }
+      var btnHtml;
+      if (isMock) {
+        btnHtml = '<button class="banq-earn-btn" disabled>Coming Soon</button>';
+      } else if (BANQ.signedIn()) {
+        btnHtml = '<button class="banq-earn-btn" data-banner-id="' + esc(b.id) + '" data-type="' + esc(b.type || 'image') + '">Click to Earn</button>';
+      } else {
+        btnHtml = '<a href="login.html" class="banq-earn-btn" style="text-decoration:none;display:inline-block">Sign In to Earn</a>';
+      }
+      var targetHtml = (b.target_url && b.target_url !== '#')
+        ? '<span class="banq-cooldown">' + esc(b.target_url) + '</span>'
+        : '<span class="banq-cooldown">Demo campaign</span>';
+      return '<div class="banq-card">' +
+        '<div class="banq-card-header">' +
+          '<span class="banq-advertiser">' + esc(b.advertiser || 'BANQ Partner') + '</span>' +
+          '<span class="banq-reward-badge ' + rewardClass + '">' + rewardText + '</span>' +
+        '</div>' +
+        '<div class="banq-card-media">' + mediaHtml + '</div>' +
+        '<div class="banq-card-body">' +
+          '<div class="banq-card-title">' + esc(b.title || '') + '</div>' +
+          '<div class="banq-card-desc">' + (isMock ? 'Placeholder banner -- real campaigns appear here.' : 'Click to earn rewards.') + '</div>' +
+        '</div>' +
+        '<div class="banq-card-footer">' +
+          btnHtml +
+          targetHtml +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // Wire up click-to-earn buttons (Rule 29)
+    var earnBtns = grid.querySelectorAll('.banq-earn-btn[data-banner-id]');
+    earnBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var bannerId = this.getAttribute('data-banner-id');
+        var bannerType = this.getAttribute('data-type');
+        handleEarnClick(this, bannerId, bannerType);
+      });
+    });
+  }
+
+  function handleEarnClick(btn, bannerId, bannerType) {
+    if (!BANQ.signedIn()) {
+      window.location.href = 'login.html';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Processing...';
+    var endpoint = bannerType === 'video' ? '/ads/impression' : '/ads/click';
+    BANQ.fetchJson(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ banner_id: parseInt(bannerId) })
+    }).then(function(data) {
+      if (data.error) {
+        btn.disabled = false;
+        btn.textContent = 'Click to Earn';
+        BANQ.toast(data.error, 'error');
+        return;
+      }
+      btn.textContent = 'Earned!';
+      btn.style.opacity = '0.45';
+      BANQ.toast('+' + (data.units_awarded || data.credits_awarded || 0) + ' earned!', 'success');
+      loadBalance();
+      loadBonusProgress();
+    }).catch(function(err) {
+      btn.disabled = false;
+      btn.textContent = 'Click to Earn';
+      if (err && err.status === 429) {
+        BANQ.toast('Cooling down -- wait a few seconds.', 'error');
+      } else if (err && err.status === 400 && err.message && err.message.indexOf('cooldown') >= 0) {
+        btn.textContent = 'Come back later';
+        btn.style.opacity = '0.45';
+        BANQ.toast('Banner on cooldown.', 'info');
+      } else {
+        BANQ.toast('Failed to earn. Try again.', 'error');
+      }
+    });
+  }
+
+  function loadBonusProgress() {
+    if (!BANQ.signedIn()) return;
+    var bar = document.getElementById('banqProgressBar');
+    var text = document.getElementById('banqProgressText');
+    if (!bar || !text) return;
+    BANQ.fetchJson('/ads/clicks/history').then(function(data) {
+      var history = (data.history || []).filter(function(h) {
+        return h.clicked_at && isToday(h.clicked_at);
+      });
+      var uniqueClicks = new Set(history.map(function(h) { return h.banner_id; })).size;
+      var pct = Math.min(100, (uniqueClicks / 20) * 100);
+      bar.style.width = pct + '%';
+      text.textContent = uniqueClicks + '/20 unique clicks today';
+    }).catch(function() {});
+  }
+
+  function isToday(dateStr) {
+    var d = new Date(dateStr);
+    var now = new Date();
+    return d.getFullYear() === now.getFullYear() &&
+           d.getMonth() === now.getMonth() &&
+           d.getDate() === now.getDate();
+  }
+
+  function init() {
+    renderUserArea();
+
+    // Check auth first, then load feed
+    BANQ.checkAuth().then(function(user) {
+      if (user) renderUserArea();
+      loadBonusProgress();
+    });
+
+    // Fetch public banners (no auth needed -- GET /api/ads/public)
+    fetch(BANQ.API_BASE + '/ads/public')
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        renderFeed(data.banners || [], 'all');
+      })
+      .catch(function() {
+        // Fallback to mock banners (Rule 14)
+        renderFeed(MOCK_BANNERS, 'all');
+      });
+
+    // Wire filter chips (Rule 29)
+    var chips = document.querySelectorAll('.banq-filter-chip');
+    chips.forEach(function(chip) {
+      chip.addEventListener('click', function() {
+        chips.forEach(function(c) { c.classList.remove('active'); });
+        this.classList.add('active');
+        var filter = this.getAttribute('data-filter');
+        // Re-fetch and re-render with filter
+        fetch(BANQ.API_BASE + '/ads/public')
+          .then(function(res) { return res.json(); })
+          .then(function(data) { renderFeed(data.banners || [], filter); })
+          .catch(function() { renderFeed(MOCK_BANNERS, filter); });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

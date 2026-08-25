@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0b10" />
+<title>Billboard Locations -- New Quanthoms</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+<script src="js/app.js"></script>
+<style>
+/* Billboard page styles */
+.banq-bill-hero {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+.banq-bill-hero-title {
+  font-family: var(--font-d);
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+.banq-bill-hero-sub {
+  font-size: 14px;
+  color: var(--text2);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Declaration form */
+.banq-declare-section {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.banq-declare-title {
+  font-family: var(--font-d);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+.banq-declare-form {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+.banq-declare-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.banq-declare-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-family: var(--font-m);
+}
+.banq-declare-input {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 12px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.banq-declare-input:focus { border-color: var(--accent); }
+.banq-declare-btn {
+  background: var(--accent);
+  border: none;
+  color: #0a0b10;
+  font-family: var(--font-b);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+  white-space: nowrap;
+}
+.banq-declare-btn:hover { filter: brightness(1.1); }
+.banq-declare-btn:active { transform: scale(0.97); }
+.banq-declare-note {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 10px;
+  font-family: var(--font-m);
+}
+
+/* Stats table */
+.banq-stats-section {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.banq-stats-title {
+  font-family: var(--font-d);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: var(--text);
+}
+.banq-street-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.banq-street-table th {
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-family: var(--font-m);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border2);
+}
+.banq-street-table td {
+  padding: 10px;
+  font-size: 12px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-m);
+}
+.banq-street-table tr:hover td { background: rgba(255,255,255,0.02); }
+.banq-demand-bar {
+  display: inline-block;
+  height: 6px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-g));
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* Partner CTA */
+.banq-partner-cta {
+  background: rgba(240,163,64,0.06);
+  border: 1px solid rgba(240,163,64,0.15);
+  border-radius: 14px;
+  padding: 24px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.banq-partner-cta-title {
+  font-family: var(--font-d);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+.banq-partner-cta-desc {
+  font-size: 13px;
+  color: var(--text2);
+  max-width: 500px;
+  margin: 0 auto 16px;
+  line-height: 1.6;
+}
+.banq-partner-cta-btn {
+  display: inline-block;
+  background: var(--accent);
+  border: none;
+  color: #0a0b10;
+  font-family: var(--font-b);
+  font-weight: 700;
+  font-size: 13px;
+  padding: 12px 28px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: filter 0.15s, transform 0.1s;
+}
+.banq-partner-cta-btn:hover { filter: brightness(1.1); }
+.banq-partner-cta-btn:active { transform: scale(0.97); }
+
+@media (max-width: 768px) {
+  .banq-declare-form { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="banq-header">
+  <div class="banq-container banq-header-inner">
+    <a href="/" class="banq-logo">
+      <img src="assets/logo.svg" alt="BANQ" />
+      <span>New Quanthoms</span>
+    </a>
+    <nav class="banq-nav">
+      <a href="/">Feed</a>
+      <a href="billboards.html">Billboards</a>
+      <a href="about.html">About</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+    <div id="banqUserArea"></div>
+  </div>
+</header>
+
+<!-- Content -->
+<div class="banq-container" style="padding:24px 20px;max-width:900px">
+
+  <!-- Hero -->
+  <div class="banq-bill-hero">
+    <div class="banq-bill-hero-title">Billboard Locations</div>
+    <div class="banq-bill-hero-sub">Declare which streets you want billboard ads on. Demand data shows where users want billboards -- this informs billboard owners and agencies to partner with us.</div>
+  </div>
+
+  <!-- Declaration form -->
+  <div class="banq-declare-section">
+    <div class="banq-declare-title">Declare a Street</div>
+    <div class="banq-declare-form">
+      <div class="banq-declare-field">
+        <label class="banq-declare-label">Street Name</label>
+        <input class="banq-declare-input" id="banqStreetName" placeholder="e.g. Victoria Island Road" />
+      </div>
+      <div class="banq-declare-field">
+        <label class="banq-declare-label">City</label>
+        <input class="banq-declare-input" id="banqStreetCity" placeholder="e.g. Lagos" />
+      </div>
+      <div class="banq-declare-field">
+        <label class="banq-declare-label">Country</label>
+        <input class="banq-declare-input" id="banqStreetCountry" placeholder="e.g. Nigeria" />
+      </div>
+      <button class="banq-declare-btn" id="banqDeclareBtn">Declare</button>
+    </div>
+    <div class="banq-declare-note" id="banqDeclareNote">Sign in to declare a street and track demand.</div>
+  </div>
+
+  <!-- Demand stats table -->
+  <div class="banq-stats-section">
+    <div class="banq-stats-title">Street Demand -- Global Stats</div>
+    <table class="banq-street-table">
+      <thead>
+        <tr><th>Street</th><th>City</th><th>Country</th><th>Declarations</th><th>Demand</th></tr>
+      </thead>
+      <tbody id="banqStreetTableBody">
+        <!-- Placeholder data (Rules 14, 33, 35) -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Partner CTA -->
+  <div class="banq-partner-cta">
+    <div class="banq-partner-cta-title">Are You a Billboard Owner or Agency?</div>
+    <div class="banq-partner-cta-desc">See demand for your locations? Apply to become a billboard partner. We connect you with advertisers looking for your space.</div>
+    <a href="about.html" class="banq-partner-cta-btn">Apply to Partner</a>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="banq-footer">
+  <div class="banq-container">
+    New Quanthoms Billboard Agency (BANQ) -- A Quanthom Lumina company.
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // Placeholder street demand data (Rules 14, 33, 35)
+  var MOCK_STREETS = [
+    { street: 'Victoria Island Road', city: 'Lagos', country: 'Nigeria', declarations: 385 },
+    { street: 'Oxford Street', city: 'London', country: 'UK', declarations: 312 },
+    { street: 'Times Square', city: 'New York', country: 'USA', declarations: 289 },
+    { street: 'Shibuya Crossing', city: 'Tokyo', country: 'Japan', declarations: 245 },
+    { street: 'Sheikh Zayed Road', city: 'Dubai', country: 'UAE', declarations: 198 },
+    { street: 'Thika Superhighway', city: 'Nairobi', country: 'Kenya', declarations: 167 },
+    { street: 'Accra Mall Junction', city: 'Accra', country: 'Ghana', declarations: 134 },
+    { street: 'Bandra Worli Sea Link', city: 'Mumbai', country: 'India', declarations: 121 },
+    { street: 'Avenida Paulista', city: 'Sao Paulo', country: 'Brazil', declarations: 98 },
+    { street: 'Rue de Rivoli', city: 'Paris', country: 'France', declarations: 76 }
+  ];
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function renderUserArea() {
+    var area = document.getElementById('banqUserArea');
+    if (!area) return;
+    if (BANQ.signedIn()) {
+      var user = BANQ.getUser();
+      var name = user ? (user.username || 'User') : 'User';
+      area.innerHTML =
+        '<div class="banq-user-badge"><span>' + esc(name) + '</span></div>' +
+        '<button class="banq-signin-btn" id="banqLogoutBtn" style="margin-left:8px">Sign Out</button>';
+      var btn = document.getElementById('banqLogoutBtn');
+      if (btn) btn.addEventListener('click', function() { BANQ.logout(); });
+    } else {
+      area.innerHTML = '<a href="login.html?redirect=billboards.html" class="banq-signin-btn">Sign In</a>';
+    }
+  }
+
+  function renderStreetTable(streets) {
+    var tbody = document.getElementById('banqStreetTableBody');
+    if (!tbody) return;
+    if (!streets || !streets.length) streets = MOCK_STREETS;
+
+    var maxDecl = Math.max.apply(null, streets.map(function(s) { return s.declarations || 0; }));
+
+    tbody.innerHTML = streets.map(function(s) {
+      var pct = maxDecl > 0 ? Math.round((s.declarations / maxDecl) * 100) : 0;
+      var barWidth = Math.max(20, pct);
+      return '<tr>' +
+        '<td>' + esc(s.street || '') + '</td>' +
+        '<td>' + esc(s.city || '') + '</td>' +
+        '<td>' + esc(s.country || '') + '</td>' +
+        '<td>' + (s.declarations || 0) + '</td>' +
+        '<td><span class="banq-demand-bar" style="width:' + barWidth + 'px"></span>' + pct + '%</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  function handleDeclare() {
+    if (!BANQ.signedIn()) {
+      window.location.href = 'login.html?redirect=billboards.html';
+      return;
+    }
+
+    var street = document.getElementById('banqStreetName').value.trim();
+    var city = document.getElementById('banqStreetCity').value.trim();
+    var country = document.getElementById('banqStreetCountry').value.trim();
+
+    if (!street) { BANQ.toast('Street name is required', 'error'); return; }
+    if (!city) { BANQ.toast('City is required', 'error'); return; }
+
+    // For now, store locally and update the table (no backend endpoint yet)
+    // When backend is ready, this will POST to /api/billboards/declare
+    BANQ.toast('Street declared: ' + street + ', ' + city, 'success');
+
+    // Add to the table locally
+    var tbody = document.getElementById('banqStreetTableBody');
+    if (tbody) {
+      var maxDecl = MOCK_STREETS[0] ? MOCK_STREETS[0].declarations : 1;
+      var newStreet = { street: street, city: city, country: country || 'Unknown', declarations: 1 };
+      MOCK_STREETS.push(newStreet);
+      renderStreetTable(MOCK_STREETS);
+    }
+
+    // Clear form
+    document.getElementById('banqStreetName').value = '';
+    document.getElementById('banqStreetCity').value = '';
+    document.getElementById('banqStreetCountry').value = '';
+  }
+
+  function init() {
+    renderUserArea();
+
+    // Update note based on auth status
+    BANQ.checkAuth().then(function(user) {
+      renderUserArea();
+      var note = document.getElementById('banqDeclareNote');
+      if (note) {
+        if (user) {
+          note.textContent = 'Signed in as ' + (user.username || 'user') + '. Declare streets to track demand.';
+        }
+      }
+    });
+
+    // Render placeholder data immediately (Rule 14)
+    renderStreetTable(MOCK_STREETS);
+
+    // Wire declare button (Rule 29)
+    var btn = document.getElementById('banqDeclareBtn');
+    if (btn) btn.addEventListener('click', handleDeclare);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

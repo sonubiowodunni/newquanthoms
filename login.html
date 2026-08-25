@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0b10" />
+<title>Sign In -- New Quanthoms</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+<script src="js/app.js"></script>
+</head>
+<body>
+
+<!-- Header -->
+<header class="banq-header">
+  <div class="banq-container banq-header-inner">
+    <a href="/" class="banq-logo">
+      <img src="assets/logo.svg" alt="BANQ" />
+      <span>New Quanthoms</span>
+    </a>
+    <nav class="banq-nav">
+      <a href="/">Feed</a>
+      <a href="billboards.html">Billboards</a>
+      <a href="about.html">About</a>
+    </nav>
+  </div>
+</header>
+
+<!-- Auth form -->
+<div class="banq-container">
+  <div class="banq-auth-page">
+    <div class="banq-auth-card">
+      <div class="banq-auth-title">Sign In to Earn Rewards</div>
+      <div class="banq-auth-sub">Use your QwkBrowser account to sign in. Earn QU and QC by engaging with billboard content.</div>
+      <input class="banq-auth-input" id="banqLoginUser" placeholder="Username" autocomplete="username" />
+      <input class="banq-auth-input" id="banqLoginPass" type="password" placeholder="Password" autocomplete="current-password" />
+      <button class="banq-auth-btn" id="banqLoginBtn">Sign In</button>
+      <div class="banq-auth-error" id="banqLoginError"></div>
+      <div class="banq-auth-note">Don't have an account? <a href="https://localhost:3001/qwkbrowser-homepage.html" target="_blank">Register on QwkBrowser</a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  function showError(msg) {
+    var el = document.getElementById('banqLoginError');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function handleLogin() {
+    var username = document.getElementById('banqLoginUser').value.trim();
+    var password = document.getElementById('banqLoginPass').value;
+    if (!username) { showError('Username is required'); return; }
+    if (!password) { showError('Password is required'); return; }
+
+    var btn = document.getElementById('banqLoginBtn');
+    btn.disabled = true;
+    btn.textContent = 'Signing in...';
+    showError('');
+
+    BANQ.login(username, password).then(function(data) {
+      if (data.token) {
+        BANQ.setToken(data.token);
+        if (data.user) BANQ.setUser(data.user);
+        BANQ.toast('Welcome, ' + (data.user ? data.user.username : username), 'success');
+        // Redirect to the page they came from, or the feed
+        var params = new URLSearchParams(window.location.search);
+        var redirect = params.get('redirect') || '/';
+        window.location.href = redirect;
+      } else {
+        showError('Login failed -- no token received');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      }
+    }).catch(function(err) {
+      var msg = (err && err.message) ? err.message : 'Login failed. Check your credentials.';
+      showError(msg);
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    });
+  }
+
+  // Wire button (Rule 29)
+  var btn = document.getElementById('banqLoginBtn');
+  if (btn) btn.addEventListener('click', handleLogin);
+
+  // Enter key on password field
+  var passInput = document.getElementById('banqLoginPass');
+  if (passInput) passInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') handleLogin();
+  });
+
+  // If already signed in, redirect
+  if (BANQ.signedIn()) {
+    var params = new URLSearchParams(window.location.search);
+    var redirect = params.get('redirect') || '/';
+    window.location.href = redirect;
+  }
+})();
+</script>
+</body>
+</html>

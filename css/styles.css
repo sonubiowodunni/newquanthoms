@@ -1,0 +1,548 @@
+/*
+ * New Quanthoms Billboard Agency (BANQ)
+ * css/styles.css -- Global styles, CSS variables, theming, responsive
+ *
+ * Minimalist brand identity. Shares some aesthetic DNA with QWK Browser
+ * (dark theme, CSS custom properties) but has its own identity.
+ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Colors -- dark minimalist */
+  --bg: #0a0b10;
+  --bg2: #0f1119;
+  --surface: #141620;
+  --card: #181b28;
+  --card2: #1e2233;
+  --border: rgba(255,255,255,0.06);
+  --border2: rgba(255,255,255,0.10);
+  --text: #e8eaf4;
+  --text2: #9498b4;
+  --muted: #5a5e7a;
+
+  /* Accents -- gold/amber (BANQ brand) */
+  --accent: #f0a340;
+  --accent-d: #e89220;
+  --accent-g: #38c98a;
+  --accent-r: #e84d6a;
+  --accent-p: #a478f0;
+
+  /* Fonts */
+  --font-d: 'Syne', sans-serif;
+  --font-m: 'IBM Plex Mono', monospace;
+  --font-b: 'Figtree', sans-serif;
+}
+
+/* -- Light theme -- */
+.banq-light {
+  --bg: #f5f6fa;
+  --bg2: #e8eaf0;
+  --surface: #ffffff;
+  --card: #ffffff;
+  --card2: #f0f1f6;
+  --border: rgba(0,0,0,0.06);
+  --border2: rgba(0,0,0,0.10);
+  --text: #1a1d2b;
+  --text2: #5a5f7a;
+  --muted: #8a8faa;
+}
+
+html, body {
+  background: radial-gradient(circle at top, rgba(240,163,64,.05), transparent 38%), var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.30;
+  background-image:
+    linear-gradient(rgba(255,255,255,.020) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.020) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: linear-gradient(180deg, rgba(0,0,0,.40), transparent 78%);
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* -- Layout -- */
+.banq-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.banq-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  padding: 24px 0;
+  min-height: calc(100vh - 72px);
+}
+
+/* -- Header -- */
+.banq-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,11,16,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border2);
+}
+.banq-light .banq-header {
+  background: rgba(245,246,250,0.92);
+}
+
+.banq-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+
+.banq-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-d);
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  text-decoration: none;
+}
+.banq-logo img { width: 32px; height: 32px; }
+
+.banq-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.banq-nav a {
+  color: var(--text2);
+  font-size: 13px;
+  font-family: var(--font-m);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.banq-nav a:hover { color: var(--accent); }
+
+.banq-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: var(--card);
+  border: 1px solid var(--border2);
+  font-size: 12px;
+  font-family: var(--font-m);
+}
+.banq-user-badge .banq-balance {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.banq-signin-btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #0a0b10;
+  border: none;
+  font-family: var(--font-b);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.banq-signin-btn:hover { filter: brightness(1.1); }
+.banq-signin-btn:active { transform: scale(0.97); }
+
+/* -- Feed -- */
+.banq-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.banq-feed-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+.banq-feed-title {
+  font-family: var(--font-d);
+  font-size: 22px;
+  font-weight: 800;
+}
+.banq-feed-filters {
+  display: flex;
+  gap: 8px;
+}
+.banq-filter-chip {
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid var(--border2);
+  background: var(--card);
+  color: var(--text2);
+  font-size: 11px;
+  font-family: var(--font-m);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.banq-filter-chip:hover { border-color: var(--accent); color: var(--accent); }
+.banq-filter-chip.active {
+  background: rgba(240,163,64,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* -- Banner card -- */
+.banq-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.banq-card:hover { border-color: rgba(240,163,64,0.20); }
+
+.banq-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.banq-advertiser {
+  font-size: 11px;
+  font-family: var(--font-m);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.banq-reward-badge {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-m);
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: rgba(240,163,64,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(240,163,64,0.25);
+}
+.banq-reward-badge.banq-reward-qc {
+  background: rgba(56,201,138,0.12);
+  color: var(--accent-g);
+  border-color: rgba(56,201,138,0.25);
+}
+
+.banq-card-media {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: var(--bg2);
+  position: relative;
+}
+.banq-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.banq-card-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.banq-card-media .banq-placeholder-bg {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-d);
+  font-size: 28px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.15);
+}
+
+.banq-card-body {
+  padding: 14px 16px;
+}
+.banq-card-title {
+  font-family: var(--font-d);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.banq-card-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.5;
+}
+
+.banq-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border);
+}
+.banq-earn-btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #0a0b10;
+  border: none;
+  font-family: var(--font-b);
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.banq-earn-btn:hover { filter: brightness(1.1); }
+.banq-earn-btn:active { transform: scale(0.97); }
+.banq-earn-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  filter: none;
+}
+.banq-cooldown {
+  font-size: 11px;
+  font-family: var(--font-m);
+  color: var(--muted);
+}
+
+/* -- Sidebar -- */
+.banq-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.banq-sidebar-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 18px;
+}
+.banq-sidebar-title {
+  font-family: var(--font-d);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text2);
+}
+
+/* -- Daily bonus progress -- */
+.banq-progress {
+  width: 100%;
+  height: 8px;
+  background: var(--bg2);
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.banq-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-g));
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+.banq-progress-text {
+  font-size: 12px;
+  font-family: var(--font-m);
+  color: var(--text2);
+}
+.banq-progress-bonus {
+  font-size: 11px;
+  color: var(--accent-g);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* -- Billboard locations -- */
+.banq-billboard-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.banq-billboard-item:last-child { border-bottom: none; }
+.banq-billboard-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+.banq-billboard-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+.banq-billboard-loc {
+  font-size: 10px;
+  color: var(--muted);
+  font-family: var(--font-m);
+}
+.banq-billboard-price {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: var(--font-m);
+}
+
+/* -- Sign-in page -- */
+.banq-auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 72px);
+}
+.banq-auth-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 400px;
+  width: 100%;
+}
+.banq-auth-title {
+  font-family: var(--font-d);
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+.banq-auth-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 24px;
+}
+.banq-auth-input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 13px;
+  padding: 12px 14px;
+  outline: none;
+  margin-bottom: 12px;
+  transition: border-color 0.15s;
+}
+.banq-auth-input:focus { border-color: var(--accent); }
+.banq-auth-btn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #0a0b10;
+  border: none;
+  font-family: var(--font-b);
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.banq-auth-btn:hover { filter: brightness(1.1); }
+.banq-auth-btn:active { transform: scale(0.98); }
+.banq-auth-error {
+  color: var(--accent-r);
+  font-size: 12px;
+  margin-top: 8px;
+  display: none;
+}
+.banq-auth-note {
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: 16px;
+  font-family: var(--font-m);
+}
+
+/* -- Empty state -- */
+.banq-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text2);
+}
+.banq-empty-title {
+  font-family: var(--font-d);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.banq-empty-desc {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* -- Toast -- */
+.banq-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: var(--card2);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  font-size: 13px;
+  font-family: var(--font-b);
+  z-index: 9999;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.banq-toast-show { opacity: 1; transform: translateY(0); }
+.banq-toast-success { border-color: rgba(56,201,138,0.30); color: var(--accent-g); }
+.banq-toast-error { border-color: rgba(232,77,106,0.30); color: var(--accent-r); }
+
+/* -- Footer -- */
+.banq-footer {
+  border-top: 1px solid var(--border);
+  padding: 24px 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: var(--font-m);
+}
+
+/* -- Responsive (Rule 28) -- */
+@media (max-width: 1024px) {
+  .banq-layout { grid-template-columns: 1fr; }
+  .banq-sidebar { display: none; }
+}
+@media (max-width: 768px) {
+  .banq-container { padding: 0 14px; }
+  .banq-feed-title { font-size: 18px; }
+  .banq-card-media { aspect-ratio: 4/3; }
+  .banq-nav { gap: 12px; }
+  .banq-nav a { font-size: 11px; }
+}
+@media (max-width: 375px) {
+  .banq-container { padding: 0 10px; }
+  .banq-card-body { padding: 10px 12px; }
+  .banq-card-footer { padding: 10px 12px; flex-wrap: wrap; gap: 8px; }
+  .banq-nav { display: none; }
+  .banq-feed-filters { flex-wrap: wrap; }
+  .banq-filter-chip { font-size: 10px; padding: 4px 10px; }
+}

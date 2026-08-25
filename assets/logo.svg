@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Four-leaf clover logo for New Quanthoms Billboard Agency (BANQ) -->
+  <defs>
+    <linearGradient id="cloverGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f0a340"/>
+      <stop offset="100%" stop-color="#e89220"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(32,32)">
+    <!-- Four leaves -->
+    <ellipse cx="0" cy="-14" rx="9" ry="13" fill="url(#cloverGrad)" opacity="0.92"/>
+    <ellipse cx="0" cy="14" rx="9" ry="13" fill="url(#cloverGrad)" opacity="0.92"/>
+    <ellipse cx="-14" cy="0" rx="13" ry="9" fill="url(#cloverGrad)" opacity="0.92"/>
+    <ellipse cx="14" cy="0" rx="13" ry="9" fill="url(#cloverGrad)" opacity="0.92"/>
+    <!-- Center -->
+    <circle cx="0" cy="0" r="5" fill="#1a1d2b"/>
+    <circle cx="0" cy="0" r="3" fill="url(#cloverGrad)"/>
+  </g>
+</svg>

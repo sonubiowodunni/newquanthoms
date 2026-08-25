@@ -1,0 +1,14 @@
+{
+  "name": "newquanthoms-billboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "New Quanthoms Billboard Agency (BANQ) - billboard advertising blog under Quanthom Lumina",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "http-proxy-middleware": "^3.0.0"
+  }
+}

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0b10" />
+<title>Partner Dashboard -- New Quanthoms</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+<script src="js/app.js"></script>
+<style>
+/* Dashboard-specific styles */
+.banq-dash-section {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.banq-dash-title {
+  font-family: var(--font-d);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+.banq-dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.banq-dash-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.banq-dash-field.full { grid-column: 1 / -1; }
+.banq-dash-label {
+  font-size: 11px;
+  color: var(--text2);
+  font-family: var(--font-m);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.banq-dash-input, .banq-dash-select, .banq-dash-textarea {
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: var(--font-m);
+  font-size: 12px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.banq-dash-input:focus, .banq-dash-select:focus, .banq-dash-textarea:focus {
+  border-color: var(--accent);
+}
+.banq-dash-btn {
+  background: var(--accent);
+  border: none;
+  color: #0a0b10;
+  font-family: var(--font-b);
+  font-weight: 700;
+  font-size: 12px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+  margin-top: 8px;
+}
+.banq-dash-btn:hover { filter: brightness(1.1); }
+.banq-dash-btn:active { transform: scale(0.97); }
+.banq-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.banq-stat-card {
+  background: var(--card);
+  border: 1px solid var(--border2);
+  border-radius: 12px;
+  padding: 14px;
+}
+.banq-stat-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  font-family: var(--font-m);
+  margin-bottom: 6px;
+}
+.banq-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-d);
+}
+.banq-banner-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.banq-banner-table th {
+  text-align: left;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-family: var(--font-m);
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border2);
+}
+.banq-banner-table td {
+  padding: 10px;
+  font-size: 12px;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-m);
+}
+.banq-signup-area {
+  text-align: center;
+  padding: 40px 20px;
+}
+.banq-signup-title {
+  font-family: var(--font-d);
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.banq-signup-desc {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 24px;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+.banq-signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+.banq-status-badge {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-weight: 600;
+  font-family: var(--font-m);
+}
+.banq-status-active {
+  background: rgba(56,201,138,0.12);
+  color: var(--accent-g);
+  border: 1px solid rgba(56,201,138,0.25);
+}
+.banq-status-paused {
+  background: rgba(240,163,64,0.12);
+  color: var(--accent);
+  border: 1px solid rgba(240,163,64,0.25);
+}
+.banq-action-btn {
+  font-size: 10px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  font-family: var(--font-m);
+  transition: all 0.15s;
+  margin-right: 4px;
+}
+.banq-action-btn:hover { border-color: var(--accent); color: var(--accent); }
+.banq-action-btn.danger:hover { border-color: var(--accent-r); color: var(--accent-r); }
+@media (max-width: 768px) {
+  .banq-dash-grid { grid-template-columns: 1fr; }
+  .banq-stats-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="banq-header">
+  <div class="banq-container banq-header-inner">
+    <a href="/" class="banq-logo">
+      <img src="assets/logo.svg" alt="BANQ" />
+      <span>New Quanthoms</span>
+    </a>
+    <nav class="banq-nav">
+      <a href="/">Feed</a>
+      <a href="billboards.html">Billboards</a>
+      <a href="about.html">About</a>
+      <a href="dashboard.html">Dashboard</a>
+    </nav>
+    <div id="banqUserArea"></div>
+  </div>
+</header>
+
+<!-- Content -->
+<div class="banq-container" style="padding:24px 20px">
+  <div id="banqDashContent">
+    <!-- Placeholder before auth check (Rules 14, 33, 35) -->
+    <div class="banq-empty">
+      <div class="banq-empty-title">Loading dashboard...</div>
+      <div class="banq-empty-desc">Checking your partner status.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function renderUserArea() {
+    var area = document.getElementById('banqUserArea');
+    if (!area) return;
+    if (BANQ.signedIn()) {
+      var user = BANQ.getUser();
+      var name = user ? (user.username || 'User') : 'User';
+      area.innerHTML =
+        '<div class="banq-user-badge">' +
+          '<span>' + esc(name) + '</span>' +
+        '</div>' +
+        '<button class="banq-signin-btn" id="banqLogoutBtn" style="margin-left:8px">Sign Out</button>';
+      var btn = document.getElementById('banqLogoutBtn');
+      if (btn) btn.addEventListener('click', function() { BANQ.logout(); });
+    } else {
+      area.innerHTML = '<a href="login.html?redirect=dashboard.html" class="banq-signin-btn">Sign In</a>';
+    }
+  }
+
+  function renderNotSignedIn() {
+    var el = document.getElementById('banqDashContent');
+    if (!el) return;
+    el.innerHTML =
+      '<div class="banq-signup-area">' +
+        '<div class="banq-signup-title">Sign In Required</div>' +
+        '<div class="banq-signup-desc">You need to sign in with your QwkBrowser account to access the partner dashboard. Create banner campaigns, track clicks, and manage your ads.</div>' +
+        '<a href="login.html?redirect=dashboard.html" class="banq-signin-btn" style="display:inline-block">Sign In</a>' +
+      '</div>';
+  }
+
+  function renderSignupForm() {
+    var el = document.getElementById('banqDashContent');
+    if (!el) return;
+    el.innerHTML =
+      '<div class="banq-signup-area">' +
+        '<div class="banq-signup-title">Become an Advertising Partner</div>' +
+        '<div class="banq-signup-desc">Create banner ad campaigns for the New Quanthoms Billboard Agency. Target by worldwide, country, or keyword. Set your own reward rates and budgets. Users earn QU for engaging with your banners.</div>' +
+        '<div class="banq-signup-form">' +
+          '<input class="banq-dash-input" id="banqCompanyName" placeholder="Company name" />' +
+          '<input class="banq-dash-input" id="banqContactEmail" placeholder="Contact email" />' +
+          '<button class="banq-dash-btn" id="banqSignupBtn">Become a Partner</button>' +
+        '</div>' +
+      '</div>';
+
+    var btn = document.getElementById('banqSignupBtn');
+    if (btn) btn.addEventListener('click', function() {
+      var companyName = document.getElementById('banqCompanyName').value.trim();
+      var contactEmail = document.getElementById('banqContactEmail').value.trim();
+      if (!companyName) { BANQ.toast('Company name is required', 'error'); return; }
+
+      BANQ.fetchJson('/ads/admin/partner', {
+        method: 'POST',
+        body: JSON.stringify({ company_name: companyName, contact_email: contactEmail })
+      }).then(function() {
+        BANQ.toast('Partner account created!', 'success');
+        loadDashboard();
+      }).catch(function() {
+        BANQ.toast('Failed to create partner account.', 'error');
+      });
+    });
+  }
+
+  function renderDashboard(partner, stats) {
+    var el = document.getElementById('banqDashContent');
+    if (!el) return;
+
+    var totalBanners = stats.length;
+    var totalClicks = stats.reduce(function(s, b) { return s + (b.total_clicks || 0); }, 0);
+    var totalUnits = stats.reduce(function(s, b) { return s + (b.total_units_spent || 0); }, 0);
+    var activeBanners = stats.filter(function(b) { return b.status === 'active'; }).length;
+
+    el.innerHTML =
+      '<div class="banq-stats-row">' +
+        '<div class="banq-stat-card"><div class="banq-stat-label">Total Banners</div><div class="banq-stat-value">' + totalBanners + '</div></div>' +
+        '<div class="banq-stat-card"><div class="banq-stat-label">Active</div><div class="banq-stat-value">' + activeBanners + '</div></div>' +
+        '<div class="banq-stat-card"><div class="banq-stat-label">Total Clicks</div><div class="banq-stat-value">' + totalClicks + '</div></div>' +
+        '<div class="banq-stat-card"><div class="banq-stat-label">Units Spent</div><div class="banq-stat-value">' + totalUnits + '</div></div>' +
+      '</div>' +
+      '<div class="banq-dash-section">' +
+        '<div class="banq-dash-title">Create New Banner</div>' +
+        '<div class="banq-dash-grid">' +
+          '<div class="banq-dash-field full"><label class="banq-dash-label">Title</label><input class="banq-dash-input" id="banqNewTitle" placeholder="Banner title" /></div>' +
+          '<div class="banq-dash-field"><label class="banq-dash-label">Image URL</label><input class="banq-dash-input" id="banqNewImage" placeholder="https://..." /></div>' +
+          '<div class="banq-dash-field"><label class="banq-dash-label">Target URL</label><input class="banq-dash-input" id="banqNewTarget" placeholder="https://..." /></div>' +
+          '<div class="banq-dash-field"><label class="banq-dash-label">Units Reward (min 10)</label><input class="banq-dash-input" id="banqNewReward" type="number" value="10" min="10" /></div>' +
+          '<div class="banq-dash-field"><label class="banq-dash-label">Cooldown (hours)</label><input class="banq-dash-input" id="banqNewCooldown" type="number" value="24" min="1" /></div>' +
+          '<div class="banq-dash-field"><label class="banq-dash-label">Targeting Type</label>' +
+            '<select class="banq-dash-select" id="banqNewTargetingType">' +
+              '<option value="worldwide">Worldwide</option>' +
+              '<option value="country">Country</option>' +
+              '<option value="keyword">Keyword</option>' +
+            '</select>' +
+          '</div>' +
+          '<div class="banq-dash-field"><label class="banq-dash-label">Targeting Value</label><input class="banq-dash-input" id="banqNewTargetingValue" placeholder="e.g. NG or crypto" /></div>' +
+        '</div>' +
+        '<button class="banq-dash-btn" id="banqCreateBtn" style="margin-top:16px">Create Banner</button>' +
+      '</div>' +
+      '<div class="banq-dash-section">' +
+        '<div class="banq-dash-title">Your Banners</div>' +
+        '<table class="banq-banner-table">' +
+          '<thead><tr><th>Title</th><th>Status</th><th>Clicks</th><th>Unique Users</th><th>Units Spent</th><th>Actions</th></tr></thead>' +
+          '<tbody id="banqBannerBody"></tbody>' +
+        '</table>' +
+      '</div>';
+
+    renderBannerTable(stats);
+
+    var createBtn = document.getElementById('banqCreateBtn');
+    if (createBtn) createBtn.addEventListener('click', createBanner);
+  }
+
+  function renderBannerTable(stats) {
+    var tbody = document.getElementById('banqBannerBody');
+    if (!tbody) return;
+    if (!stats.length) {
+      tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text2);padding:20px">No banners yet. Create one above.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = stats.map(function(b) {
+      var statusClass = b.status === 'active' ? 'banq-status-active' : 'banq-status-paused';
+      return '<tr>' +
+        '<td>' + esc(b.title || '') + '</td>' +
+        '<td><span class="banq-status-badge ' + statusClass + '">' + esc(b.status || '') + '</span></td>' +
+        '<td>' + (b.total_clicks || 0) + '</td>' +
+        '<td>' + (b.unique_users || 0) + '</td>' +
+        '<td>' + (b.total_units_spent || 0) + '</td>' +
+        '<td>' +
+          '<button class="banq-action-btn" data-toggle="' + b.id + '">' + (b.status === 'active' ? 'Pause' : 'Activate') + '</button>' +
+          '<button class="banq-action-btn danger" data-delete="' + b.id + '">Delete</button>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+
+    // Wire toggle/delete buttons (Rule 29)
+    tbody.querySelectorAll('[data-toggle]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        toggleBanner(parseInt(this.getAttribute('data-toggle')));
+      });
+    });
+    tbody.querySelectorAll('[data-delete]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        deleteBanner(parseInt(this.getAttribute('data-delete')));
+      });
+    });
+  }
+
+  function createBanner() {
+    var data = {
+      title: document.getElementById('banqNewTitle').value.trim(),
+      image_url: document.getElementById('banqNewImage').value.trim(),
+      target_url: document.getElementById('banqNewTarget').value.trim(),
+      units_reward: parseInt(document.getElementById('banqNewReward').value) || 10,
+      targeting_type: document.getElementById('banqNewTargetingType').value,
+      targeting_value: document.getElementById('banqNewTargetingValue').value.trim(),
+      cooldown_hours: parseInt(document.getElementById('banqNewCooldown').value) || 24
+    };
+
+    if (!data.title) { BANQ.toast('Title is required', 'error'); return; }
+    if (!data.target_url) { BANQ.toast('Target URL is required', 'error'); return; }
+    if (data.units_reward < 10) { BANQ.toast('Minimum reward is 10 QU', 'error'); return; }
+
+    BANQ.fetchJson('/ads/admin/banners', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }).then(function() {
+      BANQ.toast('Banner created!', 'success');
+      loadDashboard();
+    }).catch(function(err) {
+      BANQ.toast('Failed to create banner: ' + (err && err.message ? err.message : 'error'), 'error');
+    });
+  }
+
+  function toggleBanner(bannerId) {
+    BANQ.fetchJson('/ads/admin/banners').then(function(data) {
+      var banner = (data.banners || []).find(function(b) { return b.id === bannerId; });
+      if (!banner) return;
+      var newStatus = banner.status === 'active' ? 'paused' : 'active';
+      BANQ.fetchJson('/ads/admin/banners/' + bannerId, {
+        method: 'PUT',
+        body: JSON.stringify({ status: newStatus })
+      }).then(function() {
+        BANQ.toast('Banner ' + newStatus, 'success');
+        loadDashboard();
+      });
+    });
+  }
+
+  function deleteBanner(bannerId) {
+    if (!confirm('Delete this banner? This cannot be undone.')) return;
+    BANQ.fetchJson('/ads/admin/banners/' + bannerId, {
+      method: 'DELETE'
+    }).then(function() {
+      BANQ.toast('Banner deleted', 'success');
+      loadDashboard();
+    }).catch(function() {
+      BANQ.toast('Failed to delete banner', 'error');
+    });
+  }
+
+  function loadDashboard() {
+    BANQ.fetchJson('/ads/admin/stats').then(function(data) {
+      renderDashboard(data.partner, data.stats || []);
+    }).catch(function(err) {
+      if (err && err.status === 403) {
+        renderSignupForm();
+      } else {
+        renderSignupForm();
+      }
+    });
+  }
+
+  function init() {
+    renderUserArea();
+
+    if (!BANQ.signedIn()) {
+      renderNotSignedIn();
+      return;
+    }
+
+    BANQ.checkAuth().then(function(user) {
+      renderUserArea();
+      if (!user) {
+        renderNotSignedIn();
+        return;
+      }
+      loadDashboard();
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
