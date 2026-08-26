@@ -11,33 +11,33 @@
 
   var BANQ = window.BANQ = window.BANQ || {};
 
-  // -- API base (proxied to QWK backend) --
+  // -- API base (auth is local, ads/profile proxied to QWK backend) --
   BANQ.API_BASE = window.location.origin + '/api';
 
-  // -- Token management --
+  // -- Token management (BANQ-local, not shared with qwkbrowser) --
   BANQ.getToken = function() {
-    return localStorage.getItem('qwk_token') || '';
+    return localStorage.getItem('banq_token') || '';
   };
 
   BANQ.setToken = function(token) {
-    localStorage.setItem('qwk_token', token);
+    localStorage.setItem('banq_token', token);
   };
 
   BANQ.clearToken = function() {
-    localStorage.removeItem('qwk_token');
-    localStorage.removeItem('qwk_user');
+    localStorage.removeItem('banq_token');
+    localStorage.removeItem('banq_user');
   };
 
   BANQ.getUser = function() {
     try {
-      return JSON.parse(localStorage.getItem('qwk_user') || 'null');
+      return JSON.parse(localStorage.getItem('banq_user') || 'null');
     } catch (e) {
       return null;
     }
   };
 
   BANQ.setUser = function(user) {
-    localStorage.setItem('qwk_user', JSON.stringify(user));
+    localStorage.setItem('banq_user', JSON.stringify(user));
   };
 
   BANQ.signedIn = function() {
@@ -54,8 +54,8 @@
     return fetch(BANQ.API_BASE + path, options).then(function(res) {
       if (res.status === 401) {
         BANQ.clearToken();
-        if (window.location.pathname !== '/signin.html') {
-          window.location.href = '/signin.html';
+        if (window.location.pathname !== '/login.html') {
+          window.location.href = '/login.html';
         }
         throw { status: 401, message: 'Unauthorized' };
       }
@@ -94,7 +94,7 @@
 
   BANQ.logout = function() {
     BANQ.clearToken();
-    window.location.href = '/signin.html';
+    window.location.href = '/login.html';
   };
 
   // -- Utils --
