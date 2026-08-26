@@ -564,7 +564,7 @@ Last updated: 2026-08-24
 
 NOTE: Flag files (frontend/js/flags.js, backend/flags.js) were created
 2026-08-23. All flags flipped to true 2026-08-24 per user request.
-Marketing and admin accounts are always exempt from gating.
+Admin accounts are always exempt from gating.
 
 ==============================================================================
 SECTION 11: PRODUCTION ACCOUNTS
@@ -576,29 +576,12 @@ without explicit user approval. All gating/flag restrictions are
 exempt for these accounts -- they always have full access.
 
 ------------------------------------------------------------------------------
-11.1 MARKETING ACCOUNTS
+11.1 ADMIN ACCOUNT (BANQ)
 ------------------------------------------------------------------------------
 
-  | Username          | Email                        | Password     |
-  |-------------------|------------------------------|--------------|
-  | quanthomoffice    | thisisareaone@gmail.com      | typetype450  |
-  | qwkbrowser        | nctgraphicsonline@gmail.com  | typetype450  |
-  | iloveqwkbrowser   | logobozzstudios@gmail.com    | typetype450  |
-
-  Properties:
-  - is_marketing_account = 1
-  - marketing_balance = 1,000,000,000 (1 Billion QU)
-  - marketing_cap_per_24h = 15,000,000 (15 Million QU/day)
-  - Auto-reset to 1 Billion every 60 days
-  - Seeded in db.js lines ~2727-2749
-
-------------------------------------------------------------------------------
-11.2 ADMIN ACCOUNT
-------------------------------------------------------------------------------
-
-  | Username   | Email                      | Password     |
-  |-----------|----------------------------|--------------|
-  | qwkadmin  | qwkadmin@qwkbrowser.local  | typetype450  |
+  | Username  | Email                        | Password     |
+  |-----------|------------------------------|--------------|
+  | banqadmin | banqadmin@newquanthoms.local | typetype450  |
 
   Properties:
   - is_marketing_account = 0
