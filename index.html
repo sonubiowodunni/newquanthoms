@@ -24,6 +24,7 @@
     <nav class="banq-nav">
       <a href="/">Feed</a>
       <a href="billboards.html">Billboards</a>
+      <a href="packages.html">Packages</a>
       <a href="about.html">About</a>
       <a href="dashboard.html">Dashboard</a>
     </nav>
@@ -59,32 +60,13 @@
         <div class="banq-progress-bonus">20 unique clicks = 40 QC bonus</div>
       </div>
       <div class="banq-sidebar-card">
-        <div class="banq-sidebar-title">Billboard Locations</div>
-        <div class="banq-billboard-item">
-          <div class="banq-billboard-icon">&#128205;</div>
-          <div>
-            <div class="banq-billboard-name">Lagos Island</div>
-            <div class="banq-billboard-loc">Nigeria</div>
-          </div>
-          <div class="banq-billboard-price">$500/wk</div>
+        <div class="banq-sidebar-title">~ Billboard Interest ~</div>
+        <div id="banqInterestList">
+          <!-- Populated by JS -- placeholder data renders immediately (Rule 14) -->
         </div>
-        <div class="banq-billboard-item">
-          <div class="banq-billboard-icon">&#128205;</div>
-          <div>
-            <div class="banq-billboard-name">London Underground</div>
-            <div class="banq-billboard-loc">UK</div>
-          </div>
-          <div class="banq-billboard-price">1.2K GBP/wk</div>
-        </div>
-        <div class="banq-billboard-item">
-          <div class="banq-billboard-icon">&#128205;</div>
-          <div>
-            <div class="banq-billboard-name">Times Square</div>
-            <div class="banq-billboard-loc">New York, USA</div>
-          </div>
-          <div class="banq-billboard-price">$3K/wk</div>
-        </div>
+        <a class="banq-interest-showmore" id="banqInterestShowMore">Show More</a>
       </div>
+      <a class="banq-adpackages-link" id="banqAdPackagesLink">&lt; Check New Quanthoms AD-Packages &gt;</a>
     </aside>
 
   </div>
@@ -93,7 +75,7 @@
 <!-- Footer -->
 <footer class="banq-footer">
   <div class="banq-container">
-    New Quanthoms Billboard Agency (BANQ) -- A Quanthom Lumina company.
+    Billboard Agency for New Quanthoms (BANQ) -- A Quanthom Lumina company.
     In partnership with <a href="https://github.com/sonubiowodunni/qwkbrowser">QwkBrowser</a>.
   </div>
 </footer>
@@ -330,6 +312,206 @@
           .then(function(data) { renderFeed(data.banners || [], filter); })
           .catch(function() { renderFeed(MOCK_BANNERS, filter); });
       });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+<!-- Billboard Interest Show More Popup -->
+<div class="banq-modal-overlay" id="banqInterestModal">
+  <div class="banq-modal">
+    <button class="banq-modal-close" id="banqInterestModalClose">X</button>
+    <div class="banq-modal-title">Billboard Interest -- All Cities</div>
+    <div class="banq-modal-sub">Cities with highest advertising interest (last 7 days)</div>
+    <div class="banq-modal-interest-list" id="banqInterestModalList"></div>
+  </div>
+</div>
+
+<!-- AD-Packages Popup -->
+<div class="banq-modal-overlay" id="banqAdPackagesModal">
+  <div class="banq-modal">
+    <button class="banq-modal-close" id="banqAdPackagesModalClose">X</button>
+    <div class="banq-modal-title">New Quanthoms AD-Packages</div>
+    <div class="banq-modal-sub">Enter your QAP number into a package to launch your ad</div>
+
+    <div class="banq-pkg-popup-item">
+      <div class="banq-pkg-popup-name">Starter Banner</div>
+      <div class="banq-pkg-popup-price">$50 / 7 days</div>
+      <div class="banq-pkg-popup-desc">Image banner, 10 QU/click, up to 500 clicks, worldwide targeting, 24h cooldown.</div>
+      <div class="banq-pkg-popup-qap">
+        <input class="banq-pkg-popup-qap-input" placeholder="QAP-XXXXXXX" data-pkg="starter" />
+        <button class="banq-pkg-popup-qap-btn" data-pkg-btn="starter">Launch</button>
+      </div>
+    </div>
+
+    <div class="banq-pkg-popup-item">
+      <div class="banq-pkg-popup-name">Premium Banner</div>
+      <div class="banq-pkg-popup-price">$200 / 14 days</div>
+      <div class="banq-pkg-popup-desc">Image or video, 25 QU/click, up to 2,500 clicks, country/keyword targeting, 48h cooldown, priority placement.</div>
+      <div class="banq-pkg-popup-qap">
+        <input class="banq-pkg-popup-qap-input" placeholder="QAP-XXXXXXX" data-pkg="premium" />
+        <button class="banq-pkg-popup-qap-btn" data-pkg-btn="premium">Launch</button>
+      </div>
+    </div>
+
+    <div class="banq-pkg-popup-item">
+      <div class="banq-pkg-popup-name">Sponsored Feed</div>
+      <div class="banq-pkg-popup-price">$500 / 30 days</div>
+      <div class="banq-pkg-popup-desc">Video or image, 50 QU/click, up to 6,000 clicks, full targeting, 72h cooldown, top placement, dedicated manager.</div>
+      <div class="banq-pkg-popup-qap">
+        <input class="banq-pkg-popup-qap-input" placeholder="QAP-XXXXXXX" data-pkg="sponsored" />
+        <button class="banq-pkg-popup-qap-btn" data-pkg-btn="sponsored">Launch</button>
+      </div>
+    </div>
+
+    <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--font-m);text-align:center">
+      QAP = Quanthom Advertising Profile Number. Get yours on QwkBrowser.
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // Placeholder billboard interest data -- city level, last 7 days (Rules 14, 33, 35)
+  var BILLBOARD_INTEREST = [
+    { city: 'Lagos', country: 'Nigeria', count: 165 },
+    { city: 'New York', country: 'America', count: 143 },
+    { city: 'Tokyo', country: 'Japan', count: 96 },
+    { city: 'London', country: 'UK', count: 84 },
+    { city: 'Dubai', country: 'UAE', count: 72 },
+    { city: 'Nairobi', country: 'Kenya', count: 58 },
+    { city: 'Accra', country: 'Ghana', count: 45 },
+    { city: 'Mumbai', country: 'India', count: 38 },
+    { city: 'Sao Paulo', country: 'Brazil', count: 31 },
+    { city: 'Paris', country: 'France', count: 24 }
+  ];
+
+  // Extended list for Show More popup
+  var BILLBOARD_INTEREST_ALL = BILLBOARD_INTEREST.concat([
+    { city: 'Cairo', country: 'Egypt', count: 19 },
+    { city: 'Berlin', country: 'Germany', count: 17 },
+    { city: 'Sydney', country: 'Australia', count: 15 },
+    { city: 'Toronto', country: 'Canada', count: 13 },
+    { city: 'Singapore', country: 'Singapore', count: 11 },
+    { city: 'Istanbul', country: 'Turkey', count: 9 },
+    { city: 'Bangkok', country: 'Thailand', count: 7 },
+    { city: 'Lagos Mainland', country: 'Nigeria', count: 5 }
+  ]);
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function renderInterestSidebar() {
+    var list = document.getElementById('banqInterestList');
+    if (!list) return;
+    list.innerHTML = BILLBOARD_INTEREST.map(function(item) {
+      return '<div class="banq-interest-item">' +
+        '<div>' +
+          '<div class="banq-interest-city">' + esc(item.city) + '</div>' +
+          '<div class="banq-interest-country">' + esc(item.country) + '</div>' +
+        '</div>' +
+        '<div class="banq-interest-count">' + item.count + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function renderInterestModal() {
+    var list = document.getElementById('banqInterestModalList');
+    if (!list) return;
+    list.innerHTML = BILLBOARD_INTEREST_ALL.map(function(item) {
+      return '<div class="banq-modal-interest-row">' +
+        '<div>' +
+          '<div class="banq-modal-interest-city">' + esc(item.city) + '</div>' +
+          '<div class="banq-modal-interest-country">' + esc(item.country) + '</div>' +
+        '</div>' +
+        '<div class="banq-modal-interest-count">' + item.count + '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  function openModal(id) {
+    var modal = document.getElementById(id);
+    if (modal) modal.classList.add('open');
+  }
+
+  function closeModal(id) {
+    var modal = document.getElementById(id);
+    if (modal) modal.classList.remove('open');
+  }
+
+  function init() {
+    // Render sidebar interest immediately (Rule 14)
+    renderInterestSidebar();
+    renderInterestModal();
+
+    // Show More link (Rule 29)
+    var showMore = document.getElementById('banqInterestShowMore');
+    if (showMore) showMore.addEventListener('click', function(e) {
+      e.preventDefault();
+      openModal('banqInterestModal');
+    });
+
+    // Interest modal close
+    var interestClose = document.getElementById('banqInterestModalClose');
+    if (interestClose) interestClose.addEventListener('click', function() {
+      closeModal('banqInterestModal');
+    });
+
+    // AD-Packages link (Rule 29)
+    var adPackagesLink = document.getElementById('banqAdPackagesLink');
+    if (adPackagesLink) adPackagesLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      openModal('banqAdPackagesModal');
+    });
+
+    // AD-Packages modal close
+    var adPackagesClose = document.getElementById('banqAdPackagesModalClose');
+    if (adPackagesClose) adPackagesClose.addEventListener('click', function() {
+      closeModal('banqAdPackagesModal');
+    });
+
+    // AD-Packages popup launch buttons (Rule 29)
+    var launchBtns = document.querySelectorAll('[data-pkg-btn]');
+    launchBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var pkg = this.getAttribute('data-pkg-btn');
+        var input = document.querySelector('[data-pkg="' + pkg + '"]');
+        var qap = input ? input.value.trim() : '';
+        if (!qap) { BANQ.toast('Enter your QAP number for ' + pkg, 'error'); return; }
+        if (!qap.match(/^QAP-[A-Z0-9]{6,}$/i)) { BANQ.toast('Invalid QAP format (e.g. QAP-26384J3)', 'error'); return; }
+        BANQ.toast('Launching ' + pkg + ' package for ' + qap + '...', 'success');
+        setTimeout(function() {
+          window.location.href = 'dashboard.html?qap=' + encodeURIComponent(qap) + '&pkg=' + encodeURIComponent(pkg);
+        }, 1200);
+      });
+    });
+
+    // Close modals on overlay click
+    document.querySelectorAll('.banq-modal-overlay').forEach(function(overlay) {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+      });
+    });
+
+    // Close modals on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.banq-modal-overlay.open').forEach(function(m) {
+          m.classList.remove('open');
+        });
+      }
     });
   }
 

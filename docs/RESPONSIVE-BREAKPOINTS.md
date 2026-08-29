@@ -1,17 +1,18 @@
-# QwkBrowser Responsive Breakpoint Standard
+# BANQ Responsive Breakpoint Standard
 
-> **ID:** QWK-RB-001
+> **ID:** BANQ-RB-001
 > **Status:** ACTIVE RULE
-> **Reference:** AGENTS.md Rule 28
-> **Created:** 2026-08-20
+> **Reference:** AGENTS.md
+> **Created:** 2026-08-26
 
 ---
 
 ## 1. Why This Exists
 
-QwkBrowser is a social platform. Social platforms are used on phones first,
-tablets second, desktops third. Every page must work well at every screen size.
-This document defines the standard breakpoints and the rules for applying them.
+BANQ is a billboard advertising platform. Users browse banner feeds on
+phones, tablets, and desktops. Every page must work well at every screen
+size. This document defines the standard breakpoints and the rules for
+applying them.
 
 If you build a new page or modify an existing layout, you MUST follow these
 breakpoints. Do not invent your own.
@@ -20,7 +21,7 @@ breakpoints. Do not invent your own.
 
 ## 2. Standard Breakpoints
 
-QwkBrowser uses three tiers:
+BANQ uses three tiers:
 
 | Tier | Name | CSS Range | Target Devices |
 |------|------|-----------|----------------|
@@ -75,10 +76,13 @@ At phone width, the following adjustments are MANDATORY:
 - Body text: 13px (unchanged)
 - Mono/labels: 10px (unchanged)
 
-### 3.3 Avatars
-- Profile avatar: 64px (not 80px)
-- Post avatar: 32px (not 36px)
-- Chat avatar: 24px (not 28px)
+### 3.3 BANQ-Specific Elements
+- Banner card image: full-width, 16:9 aspect ratio maintained
+- Video card: full-width, play button centered
+- Billboard interest sidebar: collapses below feed, not right side
+- AD-Packages popup: full-screen modal on phone (not side panel)
+- Dashboard QAP banner: stacked vertically (not horizontal)
+- Package tier cards: stacked vertically (not 3-column grid)
 
 ### 3.4 Tab Bars
 - Must scroll horizontally or wrap to second row
@@ -138,7 +142,7 @@ At phone width, the following adjustments are MANDATORY:
    on an iPhone SE (375px wide). Does the layout work? Are tabs accessible?
    Is text readable? If not, add phone-specific CSS.
 
-4. **Do not use min-width for mobile-first.** QwkBrowser uses max-width
+4. **Do not use min-width for mobile-first.** BANQ uses max-width
    (desktop-first) because the base styles target desktop and overrides
    reduce for smaller screens. This matches the existing codebase pattern.
 
@@ -181,7 +185,22 @@ Real device widths for testing:
 
 ---
 
-## 8. Verification
+## 8. BANQ Page Reference
+
+Pages that must follow these breakpoints:
+
+| Page | Layout | Key Responsive Concerns |
+|------|--------|--------------------------|
+| index.html | Feed + sidebar | Banner cards full-width on phone, sidebar collapses |
+| billboards.html | Form + stats + sidebar | Declaration form stacks, stats table scrolls |
+| packages.html | 3-column cards | Tier cards stack vertically on phone |
+| dashboard.html | Banner CRUD + QAP banner | QAP banner stacks, form fields full-width |
+| about.html | Content + contact form | Contact form stacks, padding reduces |
+| login.html | Centered card | Card width 90% on phone, 400px max on desktop |
+
+---
+
+## 9. Verification
 
 When verifying responsive design:
 1. Open the page in a browser

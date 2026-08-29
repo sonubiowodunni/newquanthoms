@@ -196,6 +196,7 @@
     <nav class="banq-nav">
       <a href="/">Feed</a>
       <a href="billboards.html">Billboards</a>
+      <a href="packages.html">Packages</a>
       <a href="about.html">About</a>
       <a href="dashboard.html">Dashboard</a>
     </nav>
@@ -205,6 +206,15 @@
 
 <!-- Content -->
 <div class="banq-container" style="padding:24px 20px">
+  <!-- QAP banner (shows when redirected from packages.html) -->
+  <div id="banqQapBanner" style="display:none;background:rgba(240,163,64,0.08);border:1px solid rgba(240,163,64,0.25);border-radius:14px;padding:20px;margin-bottom:20px">
+    <div style="font-family:var(--font-d);font-size:16px;font-weight:700;color:var(--accent);margin-bottom:8px">QAP Number Detected</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:10px" id="banqQapBannerText"></div>
+    <div style="font-size:11px;color:var(--muted);font-family:var(--font-m)">
+      Your QAP (Quanthom Advertising Profile) number links your advertising profile from QwkBrowser.
+      Create banner campaigns below, or <a href="packages.html">browse all ad packages</a>.
+    </div>
+  </div>
   <div id="banqDashContent">
     <!-- Placeholder before auth check (Rules 14, 33, 35) -->
     <div class="banq-empty">
@@ -249,7 +259,7 @@
     el.innerHTML =
       '<div class="banq-signup-area">' +
         '<div class="banq-signup-title">Sign In Required</div>' +
-        '<div class="banq-signup-desc">You need to sign in with your QwkBrowser account to access the partner dashboard. Create banner campaigns, track clicks, and manage your ads.</div>' +
+        '<div class="banq-signup-desc">You need to sign in with your QwkBrowser account to access the partner dashboard. Plug in your QAP number, create banner campaigns, track clicks, and manage your ads.</div>' +
         '<a href="login.html?redirect=dashboard.html" class="banq-signin-btn" style="display:inline-block">Sign In</a>' +
       '</div>';
   }
@@ -437,6 +447,17 @@
 
   function init() {
     renderUserArea();
+
+    // Check for QAP params from packages.html redirect
+    var params = new URLSearchParams(window.location.search);
+    var qap = params.get('qap');
+    var pkg = params.get('pkg');
+    if (qap && pkg) {
+      var banner = document.getElementById('banqQapBanner');
+      var bannerText = document.getElementById('banqQapBannerText');
+      if (banner) banner.style.display = 'block';
+      if (bannerText) bannerText.textContent = 'QAP: ' + qap + ' -- Package: ' + pkg + '. Sign in to launch your ad campaign.';
+    }
 
     if (!BANQ.signedIn()) {
       renderNotSignedIn();

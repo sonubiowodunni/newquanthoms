@@ -1,466 +1,321 @@
 ==============================================================================
- BUFF DELEGATION GUIDE
- ==============================================================================
- Purpose: Rules and templates for delegating read-only work to BUFF.
-          BUFF reads and reports. We decide and build.
- Location: C:\Users\lenovo\Documents\qwkbrowser\BUFF-DELEGATION-GUIDE.md
- ----------------------------------------------------------------------------
-
- THE ONE RULE
- ----------------------------------------------------------------------------
- BUFF never writes code on this project. BUFF reads files, searches the
- codebase, runs scripts, and reports findings. Every delegation prompt
- must use words like "find", "list", "report", "verify", or "check".
- Never "fix", "implement", "build", "create", "refactor", or "update".
-
- If BUFF outputs code suggestions, they go in the report as text blocks
- with file name and line number. We review them. We decide if they get
- written. Not BUFF.
-
- ----------------------------------------------------------------------------
- HOW TO USE THIS DOCUMENT
- ----------------------------------------------------------------------------
- When you want to delegate work to BUFF, come to me (Tutor) with:
-
-   "Hey, I want you to delegate a task to BUFF but read the
-    BUFF-DELEGATION-GUIDE.md document first."
-
- I will read this file, pick the right task template, customize it for
- the specific job, and hand you a clean copy-paste prompt to send to BUFF.
-
- ----------------------------------------------------------------------------
- TASK CATALOG
- ----------------------------------------------------------------------------
- Each task below has:
-   - What it does
-   - Why it is useful
-   - Risk level (always LOW because BUFF only reads)
-   - Prompt template to copy-paste
-
- ==============================================================================
- TASK 1: DEAD-END AUDIT
- ==============================================================================
- What: Find every placeholder, stub, and dead-end in the frontend.
- Why:  Surfaces buttons that look real but do nothing. Prevents the
-       "coming soon" trust problem without anyone writing code blind.
- Risk: LOW. Read-only grep and report.
-
- Prompt template:
- --------------------------------------------------------------------------
-
- Read AGENTS.md Rules 11, 12, 13, and 14 before starting. Do not write
- any code. Do not edit any files. This is a read-only audit.
-
- Search every HTML file in frontend/ and every JS file in frontend/js/
- and frontend/assets/ for the following patterns:
-
-   1. alert('  -- any alert call that is a placeholder or "coming soon"
-   2. coming soon  -- any string containing this phrase
-   3. TODO  -- any TODO comment
-   4. not implemented  -- any string or comment containing this
-   5. 501  -- any HTTP 501 response or "not implemented" status
-   6. placeholder  -- any comment or string mentioning placeholder data
-
- For each match, report:
-   - File name (relative path)
-   - Line number
-   - The full line of code
-   - The function name it appears inside (if any)
-
- Format the output as a table. Do not suggest fixes. Do not write code.
- Just report what you find.
-
- --------------------------------------------------------------------------
- End template.
-
- ==============================================================================
- TASK 2: API COVERAGE MAP
- ==============================================================================
- What: List every backend route and whether the frontend calls it.
- Why:  Finds orphan endpoints (backend has it, nobody calls it) and
-       ghost calls (frontend calls it, backend doesn't have it).
- Risk: LOW. Read-only grep and report.
-
- Prompt template:
- --------------------------------------------------------------------------
-
- Read AGENTS.md Rules 11, 12, 13, and 14 before starting. Do not write
- any code. Do not edit any files. This is a read-only audit.
-
- Step 1: Read every file in backend/routes/ and list every route
- registration. For each route, report:
-   - HTTP method (GET, POST, PUT, DELETE, PATCH)
-   - Full path (including the router mount prefix from server.js)
-   - Whether it uses requireAuth or optionalAuth
-   - The DB helper function it calls (if any)
-   - File name and line number
-
- Step 2: Search every HTML file in frontend/ and every JS file in
- frontend/js/ and frontend/assets/ for fetch('  or fetch(" calls.
- For each fetch call, report:
-   - The API path being called
-   - HTTP method
-   - File name and line number
-   - The function it appears inside
-
- Step 3: Cross-reference the two lists. Report:
-   - Routes that exist in backend but are never called from frontend
-   - Fetch calls in frontend that have no matching backend route
-
- Format as three tables: Backend Routes, Frontend Fetch Calls, Mismatches.
- Do not suggest fixes. Do not write code. Just report what you find.
-
- --------------------------------------------------------------------------
- End template.
-
- ==============================================================================
- TASK 3: DB SCHEMA INVENTORY
- ==============================================================================
- What: List every table, column, index, and constraint in the database.
- Why:  Prevents duplicate table creation. 72+ tables is hard to track
-       mentally. Having a written inventory means any agent can check
-       before proposing a new table.
- Risk: LOW. Read-only.
-
- Prompt template:
- --------------------------------------------------------------------------
-
- Read AGENTS.md Rules 11, 12, 13, and 14 before starting. Do not write
- any code. Do not edit any files. This is a read-only audit.
-
- Read backend/db.js in full. Find every CREATE TABLE statement and
- every CREATE INDEX statement. For each table, report:
-   - Table name
-   - Line number where it is defined
-   - Every column with its type and constraints (NOT NULL, DEFAULT,
-     UNIQUE, PRIMARY KEY, etc.)
-   - Every index on the table (name, columns, line number)
-   - Any UNIQUE constraints or FOREIGN KEY references
-
- Also list every db.helper function (functions exported as properties
- of the db object or module.exports). For each, report:
-   - Function name
-   - Line number
-   - What table(s) it reads or writes
-   - Brief description of what it does (one sentence)
-
- Format as two tables: Schema (tables + columns + indexes) and
- Helpers (function name, line, table, description).
- Do not suggest fixes. Do not write code. Just report what you find.
-
- --------------------------------------------------------------------------
- End template.
-
- ==============================================================================
- TASK 4: VERIFICATION RUNNER
- ==============================================================================
- What: Run all 50+ PowerShell verification scripts and report pass/fail.
- Why:  Gives a snapshot of what is currently working and what is broken
-       without anyone guessing.
- Risk: LOW. Runs existing scripts, does not modify code.
-
- Prompt template:
- --------------------------------------------------------------------------
-
- Read AGENTS.md Rules 11, 12, 13, and 14 before starting. Do not write
- any code. Do not edit any files.
-
- Run the following command from the project root:
-
-   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\verify-all.ps1
-
- If verify-all.ps1 does not exist or fails, run each verification script
- individually. For each verify-v*.ps1 script in scripts/:
-   - Script name
-   - Pass or Fail
-   - If fail, the error message or failed assertion
-
- If the server is not running, start it first with:
-
-   powershell -NoProfile -ExecutionPolicy Bypass -File scripts\restart-server-silent.ps1
-
- Then wait 3 seconds and verify with:
-
-   Invoke-WebRequest 'http://localhost:3001/api/health' -UseBasicParsing -TimeoutSec 3
-
- Format the results as a table: Script Name, Status, Error (if any).
- Do not suggest fixes. Do not write code. Just report what you find.
-
- --------------------------------------------------------------------------
- End template.
-
- ==============================================================================
- TASK 5: FRONTEND-TO-BACKEND CROSS-REFERENCE
- ==============================================================================
- What: Map every frontend fetch call to its backend route.
- Why:  Catches the exact problem we just hit -- frontend calling an
-       endpoint that doesn't exist, or backend having an endpoint
-       nothing uses. More thorough than Task 2 because it includes
-       inline JS inside HTML files.
- Risk: LOW. Read-only.
-
- Prompt template:
- --------------------------------------------------------------------------
-
- Read AGENTS.md Rules 11, 12, 13, and 14 before starting. Do not write
- any code. Do not edit any files. This is a read-only audit.
-
- Search every file in frontend/ (including subdirectories) for any
- of these patterns:
-   - fetch('/api
-   - fetch("/api
-   - fetch(window.location.origin
-   - API_BASE + '
-   - API_BASE + "
-   - .then(function(r) { return r.json()
-   - XMLHttpRequest
-
- For each match, report:
-   - File name
-   - Line number
-   - The API path being called
-   - HTTP method (from the fetch options or default GET)
-   - The function name it appears inside
-
- Then read backend/server.js to find all router.use() mount points and
- list the prefix for each router file.
-
- Cross-reference: for each frontend fetch call, state whether a
- matching backend route exists. If it does not exist, flag it as
- GHOST CALL. If a backend route exists but no frontend calls it,
- flag it as ORPHAN ROUTE.
-
- Format as a table: File, Line, API Path, Method, Function, Status
- (Matched / Ghost Call / Orphan Route).
- Do not suggest fixes. Do not write code. Just report what you find.
-
- --------------------------------------------------------------------------
- End template.
-
- ==============================================================================
- TASK 6: DOCUMENTATION GENERATION
- ==============================================================================
- What: Generate or update project documentation from the codebase.
- Why:  Keeps BACKEND-INVENTORY.md, PROJECT_STATUS.md, and HANDOFF.md
-       current without anyone manually maintaining them.
- Risk: LOW. Read-only research, output is a markdown report for review.
-
- Prompt template:
- --------------------------------------------------------------------------
-
- Read AGENTS.md Rules 11, 12, 13, 14, and Section 1 (Directory Map)
- before starting. Do not write any code. Do not edit any project files.
-
- Read the following files and generate an updated inventory:
-
-   1. Read backend/server.js -- list every middleware, every router
-      mount point, and the port. Report the order of middleware.
-   2. Read every file in backend/routes/ -- for each, list the route
-      prefix, number of endpoints, and which DB helpers they use.
-   3. Read backend/db.js -- count total tables, list table names
-      alphabetically, and note the last migration line number.
-   4. Read frontend/ -- list every HTML file with its approximate line
-      count and a one-sentence description of what the page does.
-
- Output a single markdown document with four sections:
-   - Server Configuration
-   - Route Inventory
-   - Database Tables
-   - Frontend Pages
-
- Do not write this to any file. Output it as text in your response.
- I will review it and decide where it goes.
- Do not suggest fixes. Do not write code. Just report what you find.
-
- --------------------------------------------------------------------------
- End template.
-
- ==============================================================================
-TASK 7: BUTTON FUNCTION AUDIT
+BUFF-DELEGATION-GUIDE.md -- READ-ONLY TASK TEMPLATES FOR DELEGATED AGENTS
 ==============================================================================
-What: Trace every interactive button on a page to its function, classify
-      whether it actually works or is a stub/no-op/mock/phase-gated,
-      and verify the backend route exists.
-Why:  Surfaces buttons that look real but do nothing. Static code
-      analysis is more thorough than clicking buttons manually because
-      a button can show a toast (looks like it works) while making no
-      backend call at all.
-Risk: LOW. Read-only grep, function-body reading, and route checking.
+Created: 2026-08-26
+Location: docs/BUFF-DELEGATION-GUIDE.md
+Purpose: Provides standardized, read-only task templates that any agent
+         can be given directly. Each template is self-contained: it tells
+         the agent exactly what to read, what to check, what to report,
+         and what NOT to touch.
 
-Prompt template:
---------------------------------------------------------------------------
-
-Read AGENTS.md Rules 11, 12, 13, and 14 before starting. Do not write
-any code. Do not edit any files. This is a read-only audit.
-
-TARGET FILE: frontend/[PAGE].html
-
-GOAL: Produce a Function Inventory table showing which interactive
-buttons on [PAGE].html have real working backends and which are
-stubs, no-ops, mock-only, or dead ends.
-
-STEP 1 — BUTTON-TO-FUNCTION MAP
-Search [PAGE].html for every onclick="..." handler. For each,
-report:
-  - The button label or visible text (if findable nearby)
-  - The function name called
-  - The line number of the onclick
-
-STEP 2 — FUNCTION ANALYSIS
-For each unique function found in Step 1, read its full function
-body. Classify it as one of:
-
-  WORKING      — Has a real backend fetch/qwkFetch/fetchJson call
-                  to a backend route that exists in backend/routes/
-  MOCK-ONLY    — Uses makeMockFeed(), generateMockNewPost(), or
-                  hardcoded demo data instead of a real API call
-  STUB         — Empty body, /* stub */ comment, or no real logic
-  NO-OP        — Only shows a toast/alert but makes no API call
-  PHASE-GATED  — Checks checkPhase3Gate() or marketing access and
-                  blocks non-marketing users (report whether the
-                  gate works or just silently fails)
-  DELEGATES    — Calls another function that may itself be broken
-                  (trace one level deep and report what it delegates
-                  to and whether that target is WORKING or not)
-
-STEP 3 — BACKEND ROUTE CHECK
-For every function classified as WORKING, verify the backend route
-it calls actually exists. Read backend/server.js for router mount
-prefixes, then check the corresponding route file. Report:
-  - The API path called from the frontend
-  - Whether a matching route exists (YES/NO)
-  - The backend route file and line number if YES
-
-STEP 4 — OUTPUT TABLE
-Format the final output as a single table with these columns:
-
-  | Button/Label | Function | Line | Classification | Backend Route | Route Exists? | Notes |
-
-Sort the table by Classification in this order:
-  STUB, NO-OP, MOCK-ONLY, PHASE-GATED, DELEGATES, WORKING
-
-For STUB/NO-OP/MOCK-ONLY entries, add a Notes column explaining
-what the button appears to do vs what it actually does.
-
-Do not suggest fixes. Do not write code. Just report what you find.
-
---------------------------------------------------------------------------
-End template.
+RULES FOR USE:
+  1. These templates are READ-ONLY. Do not modify them.
+  2. To use one, copy its text into the agent's prompt.
+  3. The agent reads AGENTS.md first (mandatory), then executes the task.
+  4. Each template includes scope boundaries: what to touch, what not to.
+  5. Report format is specified in each template. Agents must follow it.
 
 ==============================================================================
- TASK 8: UNIVERSAL SEARCH TABLE MAP
- ==============================================================================
- What: Map EVERY table in the database against the app-wide universal search
-       function (/api/search/universal) so no content is left unsearchable.
-       The current search only covers users, amplified_urls, notes, jobs,
-       business_profiles, and retail_items. Topics, tags, factory posts,
-       broadcasts, elist listings, studio projects, knowledgebase articles,
-       crowdfund campaigns, calendar events, apps, and many more tables are
-       NOT searched yet.
- Why:  The user wants the app search to catch everything: retail items,
-       topics users enter when creating content, tags, and "other random
-       things". Before anyone wires new categories into searchUniversal,
-       we need a complete inventory of what could be searched and which
-       columns to LIKE-match on. This map is the input for the build.
- Risk: LOW. Read-only.
+HOW TO DELEGATE
+==============================================================================
 
- Prompt template:
- --------------------------------------------------------------------------
+1. Choose the template that matches the task.
+2. Copy the template text.
+3. Paste it into the agent's prompt.
+4. The agent reads AGENTS.md, then executes the template.
+5. The agent reports back in the specified format.
 
- Read AGENTS.md Rules 11, 12, 13, and 14 before starting. Do not write
- any code. Do not edit any files. This is a read-only audit.
-
- CONTEXT
- The app-wide universal search lives in backend/db.js in the
- searchUniversal function (around line 4577), served by
- GET /api/search/universal (backend/routes/profile.js around line 1252).
- It currently returns these categories: users, urls, notes, jobs,
- businesses, retail. The frontend renders them in the floating dock
- slideout (frontend/assets/qwk.js), the topbar dropdown
- (frontend/js/topbar-chips.js), and the full results page
- (frontend/appresult.html). The goal is to eventually search EVERY
- table that holds user-facing content, including topics and tags.
-
- STEP 1 - FULL TABLE INVENTORY
- Read backend/db.js in full. Find every CREATE TABLE statement. For
- each table report:
-   - Table name
-   - Line number where it is defined
-   - One-sentence purpose (what content it holds)
-
- STEP 2 - SEARCHABILITY CLASSIFICATION
- For every table found in Step 1, classify it as one of:
-
-   SEARCHABLE   - Holds user-facing content that should appear in app
-                  search results (e.g. factory_posts, broadcasts,
-                  knowledgebase_articles, elist_listings, apps,
-                  studio_projects, crowdfund_campaigns, calendar_events,
-                  reminders, recommendations, url_tracking, campaigns,
-                  direct_marketing_batches, clinic_* if public)
-   TOPIC/TAG    - Holds topics or tags users create or follow (e.g.
-                  followed_tags, supporter_tags, amplified_urls.topic,
-                  broadcasts.tags, factory post content_json tags,
-                  recommendations.tag). Report how the topic/tag text is
-                  stored (column name, JSON shape, CSV, etc.) so it can
-                  be indexed for search.
-   LOOKUP       - Reference/enum data that may be useful as filter facets
-                  but is not a result category itself (e.g. campaigns,
-                  apps categories, knowledgebase categories)
-   INFRA        - Internal bookkeeping, ledger, session, token, rate-limit,
-                  or relationship tables that should NEVER be searched
-                  (e.g. sessions, guest_sessions, x_rate_limits,
-                  quanthom_ledger, reward_ledger, password_reset_tokens,
-                  user_follows, user_blocks, retail_audit_log)
-
- STEP 3 - SEARCHABLE COLUMN MAP
- For every table classified SEARCHABLE or TOPIC/TAG, report:
-   - The exact columns whose text should be matched with LIKE (e.g.
-     title, description, body, caption, name, url, topic, tags)
-   - Any status/visibility filter that should gate the row from search
-     (e.g. only status='active', visibility='public', is_published=1)
-   - Which existing category the result could map to, or a proposed new
-     category name (e.g. Posts, Broadcasts, Articles, Listings, Apps,
-     Projects, Campaigns, Events)
-   - Which frontend page the result card should link to when clicked
-     (read the frontend/*.html files to find the target page)
-
- STEP 4 - GAP REPORT
- Read the searchUniversal function in backend/db.js (around line 4577)
- and list every SEARCHABLE/TOPIC-TAG table that is currently MISSING
- from it. Also read frontend/appresult.html and frontend/assets/qwk.js
- renderers and list every result category the frontend currently knows
- how to display, so we know which renderers also need extending.
-
- OUTPUT FORMAT
- Produce one markdown report with four tables:
-   1. All Tables - name, line number, purpose, classification
-   2. SEARCHABLE - table, columns to match, status filter, proposed
-      category, target page
-   3. TOPIC/TAG  - table, where the topic/tag text lives, how it is
-      stored (plain column, JSON, CSV), proposed category
-   4. GAP REPORT - tables missing from searchUniversal today, and
-      frontend categories missing from appresult.html/qwk.js today
-
- Do not suggest fixes. Do not write code. Just report what you find.
-
- --------------------------------------------------------------------------
- End template.
+Example prompt to an agent:
+  "Read AGENTS.md in the project root, then execute TASK 1 from
+  BUFF-DELEGATION-GUIDE.md."
 
 ==============================================================================
- DELEGATION CHECKLIST
- ==============================================================================
- Before sending any prompt to BUFF, verify:
+TASK 1: BANQ AUTH FLOW VERIFICATION
+==============================================================================
 
-   [ ] The prompt contains no words like "fix", "implement", "build",
-       "create", "refactor", or "update"
-   [ ] The prompt says "Do not write any code. Do not edit any files."
-   [ ] The prompt says "Read AGENTS.md Rules 11, 12, 13, and 14 first"
-   [ ] The prompt asks for a report, not a deliverable
-   [ ] The output format is specified (table, list, markdown)
-   [ ] BUFF is told to report line numbers and file names for everything
+SCOPE: Verify the BANQ authentication system works end-to-end.
+DO NOT MODIFY any files. This is a read-and-test task only.
 
- If any of these are missing, the prompt is not ready to send.
+READ FIRST:
+  - docs/AGENTS.md (mandatory)
+  - backend/auth.js
+  - backend/db.js
+  - js/app.js
+  - login.html
 
- ==============================================================================
- END OF GUIDE
- ==============================================================================
+CHECK:
+  1. POST /api/auth/login accepts username + password, returns token.
+  2. Token is stored in localStorage as banq_token (NOT qwk_token).
+  3. GET /api/auth/me with Bearer token returns user info.
+  4. POST /api/auth/logout deletes the session.
+  5. requireAuth middleware rejects requests without valid token.
+  6. Admin account (banqadmin) is seeded in db.js on every boot.
+  7. Passwords are hashed with bcrypt.
+  8. Tokens are UUIDv4, stored as SHA-256(token) in sessions table.
+  9. Sessions expire after 7 days.
+  10. 401 response triggers token clear + redirect to /login.html in app.js.
+
+REPORT FORMAT:
+  For each check: PASS / FAIL / N/A + one-line explanation.
+  If any FAIL: identify the file, line, and what is wrong.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 2: API PROXY VERIFICATION
+==============================================================================
+
+SCOPE: Verify the BANQ-to-QwkBrowser API proxy is correctly configured.
+DO NOT MODIFY any files. This is a read-and-test task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory)
+  - server.js
+  - .env (if it exists)
+
+CHECK:
+  1. /api/ads/* is proxied to http://localhost:3001/api/ads/*
+  2. /api/profile/* is proxied to http://localhost:3001/api/profile/*
+  3. /api/auth/* is NOT proxied (local BANQ auth only).
+  4. Proxy preserves request headers (Authorization, Content-Type).
+  5. Proxy handles errors gracefully (QWK down -> 502 or timeout, not crash).
+  6. Static files are served from project root (express.static).
+  7. SPA fallback: unknown routes return index.html.
+  8. CORS headers are present if needed for cross-origin requests.
+  9. QWK_API_URL is read from .env (not hardcoded).
+  10. Server starts without errors on port 3002.
+
+REPORT FORMAT:
+  For each check: PASS / FAIL / N/A + one-line explanation.
+  If any FAIL: identify the file, line, and what is wrong.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 3: BILLBOARD FEED AUDIT
+==============================================================================
+
+SCOPE: Audit the index.html billboard feed for correctness and completeness.
+DO NOT MODIFY any files. This is a read-and-test task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory)
+  - index.html
+  - js/app.js
+  - css/styles.css
+
+CHECK:
+  1. Feed renders placeholder banner cards on first load (before API call).
+  2. Banner cards have: image/video, title, advertiser name, QU reward badge.
+  3. "Click to Earn" button is present on each banner.
+  4. Clicking "Click to Earn" calls the API (or shows cooldown for demo).
+  5. Daily bonus progress bar is visible and updates.
+  6. Billboard Interest sidebar is present with city-level data.
+  7. "Show More" popup works for billboard interest cities.
+  8. AD-Packages popup is accessible and QAP input validates format.
+  9. Feed is responsive (works at 375px, 768px, 1440px).
+  10. No console errors on page load.
+  11. No mojibake or encoding issues in any text.
+  12. All CSS classes use banq- prefix.
+
+REPORT FORMAT:
+  For each check: PASS / FAIL / N/A + one-line explanation.
+  If any FAIL: identify the file, section, and what is wrong.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 4: PACKAGES PAGE AUDIT
+==============================================================================
+
+SCOPE: Audit packages.html for correctness and completeness.
+DO NOT MODIFY any files. This is a read-and-test task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory)
+  - packages.html
+  - js/app.js
+
+CHECK:
+  1. Three package tiers are displayed: Starter ($50/7d), Premium ($200/14d),
+     Sponsored ($500/30d).
+  2. Each tier shows: price, duration, features list.
+  3. QAP number input field is present on each tier.
+  4. QAP format validation (QAP-[A-Z0-9]{6,}) works.
+  5. Invalid QAP shows error message, does not redirect.
+  6. Valid QAP redirects to dashboard.html with ?qap= and &pkg= URL params.
+  7. Page is responsive (cards stack on phone).
+  8. No console errors.
+  9. No mojibake.
+
+REPORT FORMAT:
+  For each check: PASS / FAIL / N/A + one-line explanation.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 5: DASHBOARD QAP INTEGRATION AUDIT
+==============================================================================
+
+SCOPE: Audit dashboard.html for QAP integration correctness.
+DO NOT MODIFY any files. This is a read-and-test task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory)
+  - dashboard.html
+  - js/app.js
+
+CHECK:
+  1. QAP banner appears when URL has ?qap= parameter.
+  2. Package info appears when URL has &pkg= parameter.
+  3. Banner CRUD UI is present (create, edit, delete banners).
+  4. Auth is required (redirect to login if not signed in).
+  5. Banner form fields: title, image URL, target URL, duration.
+  6. Created banners are saved (or show placeholder if backend not ready).
+  7. Page is responsive.
+  8. No console errors.
+  9. No mojibake.
+
+REPORT FORMAT:
+  For each check: PASS / FAIL / N/A + one-line explanation.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 6: BILLBOARD DECLARATION FORM AUDIT
+==============================================================================
+
+SCOPE: Audit billboards.html for form correctness and data display.
+DO NOT MODIFY any files. This is a read-and-test task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory)
+  - billboards.html
+  - js/app.js
+
+CHECK:
+  1. Declaration form has: city, country, billboard type, message fields.
+  2. Form submission works (or shows placeholder if backend not ready).
+  3. Demand stats table is present with placeholder data.
+  4. Billboard Interest sidebar is present with city-level data.
+  5. "Show More" popup shows all cities.
+  6. Auth state is reflected in UI (signed in vs signed out).
+  7. Page is responsive.
+  8. No console errors.
+  9. No mojibake.
+
+REPORT FORMAT:
+  For each check: PASS / FAIL / N/A + one-line explanation.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 7: CONTACT FORM AUDIT
+==============================================================================
+
+SCOPE: Audit about.html contact form for correctness.
+DO NOT MODIFY any files. This is a read-and-test task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory)
+  - about.html
+  - js/app.js
+
+CHECK:
+  1. Contact form has: name, email, subject, message fields.
+  2. All fields are required (HTML5 validation or JS validation).
+  3. Submit button triggers API call (or shows toast if backend not ready).
+  4. Success toast appears after submission.
+  5. Form clears after successful submission.
+  6. Page is responsive.
+  7. No console errors.
+  8. No mojibake.
+
+REPORT FORMAT:
+  For each check: PASS / FAIL / N/A + one-line explanation.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 8: PLACEHOLDER CONTENT AUDIT
+==============================================================================
+
+SCOPE: Verify placeholder/demo content is present on all pages.
+DO NOT MODIFY any files. This is a read-and-test task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory, especially Rule 9)
+  - index.html
+  - billboards.html
+  - packages.html
+  - dashboard.html
+  - about.html
+  - login.html
+
+CHECK:
+  1. index.html: placeholder banner cards render on first load.
+  2. billboards.html: placeholder demand stats and interest data render.
+  3. packages.html: package tier cards render (not dependent on API).
+  4. dashboard.html: placeholder banners or empty state message.
+  5. about.html: about content and contact form render.
+  6. login.html: login form renders.
+  7. No page appears completely empty on first load.
+  8. Placeholder content uses same CSS classes as real content would.
+  9. Placeholder content is visually distinct from real content if needed
+     (e.g., [DEMO] prefix on banner titles).
+
+REPORT FORMAT:
+  For each page: PASS / FAIL + what placeholder content is present.
+  If any FAIL: identify what is missing and what should be there.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 9: ENCODING INTEGRITY CHECK
+==============================================================================
+
+SCOPE: Scan all HTML, CSS, and JS files for mojibake (double-UTF-8 corruption).
+DO NOT MODIFY any files. This is a read-and-scan task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory, especially Rule 5)
+
+SCAN:
+  All .html, .css, and .js files in:
+  - Project root (*.html, *.js)
+  - backend/ (*.js)
+  - css/ (*.css)
+  - js/ (*.js)
+
+CHECK FOR:
+  1. Mojibake patterns: A-cents, A-deg, A-~, A-|, A(c), A~P, etc.
+  2. Garbled UTF-8 sequences (multi-byte characters that look corrupted).
+  3. BOM characters at the start of files (EF BB BF).
+  4. Mixed encoding within a single file.
+  5. Em-dashes that appear as "--" or garbage instead of proper dashes.
+  6. Smart quotes that appear as garbage.
+
+REPORT FORMAT:
+  For each file: CLEAN / CORRUPTED + details if corrupted.
+  If CORRUPTED: identify the file, the corrupted patterns, and suggest
+  restoring from the last clean git commit.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+TASK 10: NAVIGATION CONSISTENCY CHECK
+==============================================================================
+
+SCOPE: Verify all pages have consistent navigation headers.
+DO NOT MODIFY any files. This is a read-and-check task only.
+
+READ FIRST:
+  - docs/AGENTS.md (mandatory, especially Rule 18)
+
+CHECK:
+  1. All pages have a <header> with navigation links.
+  2. Nav links are: Feed (index.html), Billboards (billboards.html),
+     Packages (packages.html), About (about.html).
+  3. All pages have a "Sign In" or user info display in the header.
+  4. Nav links are consistent across all 6 pages (same items, same order).
+  5. Active page is highlighted in nav (if implemented).
+  6. Nav is responsive (collapses or scrolls on phone).
+
+REPORT FORMAT:
+  For each page: list nav items present. Note any inconsistencies.
+  Do NOT fix anything. Report only.
+
+==============================================================================
+END OF BUFF-DELEGATION-GUIDE.md
+==============================================================================
