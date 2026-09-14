@@ -692,6 +692,253 @@ This structure fits the BANQ system:
 - Publisher application form at bottom of quanthomnetwork.html remains
   unchanged.
 
+### 23.8 PRICING + POPUP DECISIONS (Chris, 2026-09-03) -- RESUME HERE
+
+Status: TASK RECORDED. No HTML changes made yet. Next session resumes
+from this subsection + UNIFIED-AD-PAGE-RESTRUCTURE-TASK.md (BANQ-021).
+
+Scope for the qwkbrowser-side work (files inside the qwkbrowser folder):
+- quanthomnetwork.html = FULL unified ad page (complete details).
+- newquanthoms.html = "View AD Packages" popup = PARTIAL preview only.
+- BANQ standalone site (packages.html / index.html popup) is a SEPARATE
+  folder (www.newquanthoms.com) -- handled later, not in this scope.
+
+PUBLIC PRICES (placed by Chris -- display these):
+
+| Surface | Price | Key numbers |
+|---------|-------|-------------|
+| Banner Ad Placement | $50 / 7 days | Up to 500 clicks, 10 QU/click, 24h click cooldown |
+| Video Ad Placement | $150 / 7 days | (no click cap listed) |
+| Launch Package | $200 | Up to 2,500 clicks, 25 QU/click, 48h cooldown, priority placement |
+| Full Reach Package | $450 | Up to 6,000 clicks / 30 days, 50 QU/click, 72h cooldown, top placement, dedicated BANQ manager |
+
+PRICES NOT ANNOUNCED YET (show NO number -- display as "$" only):
+- Banner on Publishers Network (bullet: Up to 5,000 clicks)
+- Video on Publishers Network ($ / 7 days placeholder)
+
+POPUP BEHAVIOR (newquanthoms.html):
+- Users click the AD-Packages link -> popup opens.
+- Popup shows only PART of the package details (summary preview), even for
+  packages that ask for a QAP number. Never the full bullet list.
+- Full details live on quanthomnetwork.html only.
+- Some packages ask for QAP inside the popup; the popup still stays partial.
+
+PAGE BEHAVIOR (quanthomnetwork.html):
+- Shows the COMPLETE unified marketplace (full descriptions, full pricing
+  where announced, targeting options, launch buttons).
+- Old tier names ("Starter", "Premium", "Sponsored") removed everywhere.
+- Publisher application form at the bottom: keep as-is; may reposition
+  only if the layout needs it.
+
+CANONICAL FULL COPY for the page body is in Section 23.3 above (with the
+prices from this subsection filled in where announced).
+
+BUTTON BEHAVIOR (Chris, 2026-09-03) -- ALL packages show their Launch
+buttons now. No package is hidden. What happens on click:
+- Priced packages (Banner $50, Video $150, Launch $200, Full Reach $450):
+  clicking Launch shows "SERVICE IS DELAYED FOR TECHNICAL REVIEW".
+  Reason: image/video creatives need R2 object storage, which is not
+  connected yet. The service is activated but delayed until R2 lands.
+- Unpriced packages (Publisher Network banner + video): clicking shows
+  "AD PACKAGE WILL BE ANNOUNCE SOON".
+- When R2 + Stripe are connected later, the same buttons go live for
+  real launch (QAP + launch-with-qap flow).
+
+VIDEO AD BILLING MODEL (Chris, 2026-09-03) -- finalize with YouTube
+strategy before wiring video billing:
+- Viewer watches over 15 seconds -> charged HALF the click rate.
+- Viewer watches over 30 seconds -> charged the FULL click rate.
+- 1 click rate = 6 credits (QC).
+- Video placement pricing remains $150 / 7 days.
+
+PUBLISHER APPLICATION FORM (decision 2026-09-03):
+- The form does NOT exist in the current quanthomnetwork.html file
+  (verified 2026-09-03 -- no publisher form anywhere in qwkbrowser).
+- Decision: ADD the small intake form at the bottom of quanthomnetwork.html.
+  Fields: website name, URL, contact email, traffic estimate, content type
+  + submit. Placeholder/local confirmation until a backend endpoint is
+  built for publisher applications.
+
+PAGE CHROME (decision 2026-09-03): quanthomnetwork.html currently loads
+NO topbar/sidebar (missing js/topbar-chips.js). Decision: add the standard
+app chrome (header#topbar + topbar-chips.js) so the ad page matches every
+other QwkBrowser page.
+
+### 23.9 FOUR NEW DECISIONS (Chris, 2026-09-03) -- RESUME HERE
+
+Status: PLAN APPROVED. Decisions locked via Q&A. Implementation follows
+this subsection + UNIFIED-AD-PAGE-RESTRUCTURE-TASK.md (BANQ-021).
+
+Scope (qwkbrowser side): backend (routes/ads.js, routes/ad-profile.js,
+db.js) + quanthomnetwork.html + newquanthoms.html + assets/qwk.js dock.
+
+DECISION V1 -- VIDEO BILLING MODEL (SUPERSEDED AGAIN by Chris on the
+same day -- the 10 QU viewer reward below was REVOKED; see V1.1):
+- Viewer reward: watch 30+ seconds = 10 QU flat credited to the user.
+  Watch under 30 seconds (including 15s) = NO reward, no unit.   [REVOKED]
+
+DECISION V1.1 -- VIDEO = NO AUDIENCE PAYOUT (Chris, 2026-09-03) was
+SUPERSEDED the same day by V1.2 below (Chris clarified that QU unit
+rewards ARE wanted on the FIRST watch only -- only QC credits are banned).
+
+DECISION V1.2 -- VIDEO WATCH REWARD (Chris, 2026-09-03, FINAL):
+- A viewer earns QU (hard units) on their FIRST watch of a particular
+  video ad per cooldown -- NEVER QC credits.
+- Reward: from 10 QU upward, matching the unit amount indicated on the
+  ad (minimum 10 QU), earned only when they watch MORE THAN 30 SECONDS
+  of the video. Under 30s = no reward.
+- Video ads carry the same per-ad cooldown model as image banner clicks
+  (24h default) -- one reward per video ad per cooldown window; repeat
+  watches inside the window still unlock the click-through but pay 0.
+- Rationale: paying QC credits for watching is bad business; the QU
+  first-watch reward (with cooldown) is the sanctioned incentive.
+- ADVERTISER-SIDE billing (3 QC / 6 QC live here only):
+  * 15s+ watch = HALF click credit = 3 QC consumed from the
+    advertiser's package budget.
+  * 30s+ watch = FULL click credit = 1 click rate = 6 QC consumed.
+  * Sub-15s = no credit. These appear in campaign analytics ONLY
+    and are never paid to any user.
+- These terms appear EVERYWHERE video is mentioned: quanthomnetwork.html
+  Video Ad Placement + Video on Publishers Network cards, the
+  newquanthoms.html AD Packages popup rows, dock video cards, docs.
+- Video placement pricing stays $150 (click-rate based -- NO day duration, see 23.10).
+
+DECISION V2 -- WHERE VIDEO ADS PLAY (updated for V1.2):
+- Build IN-APP VIDEO CARDS (no dwell-timer model). Video ads render as
+  playable cards in the same surfaces as banners (Get New Quanthoms dock
+  + newquanthoms.html feed). Watching 30s+ unlocks the click-through
+  and, on the FIRST watch per cooldown, pays the indicated QU (>=10).
+- New backend endpoints: video watch session start + complete
+  (server-validated elapsed time; first 30s+ watch = unlock + QU reward
+  + full advertiser credit; 15-29s = half advertiser credit recorded in
+  analytics; watch rows logged with watched_seconds for billing).
+
+DECISION V3 -- BANQ AD SERVICE ($15/mo) OPT-IN + SURFACE GATING:
+- Every package launch flow: after QAP entry + media requirement check,
+  show opt-in: "Do you want to add BANQ AD SERVICE?" YES / NO.
+- YES = $15 per month, added as a recurring line item on the SAME Stripe
+  checkout session as the package (wired during the Stripe integration
+  step). QwkBrowser collects it; BANQ is paid out directly (settlement
+  recorded in a ledger/subscription row). Campaign flagged banq_service=1
+  when active.
+- SURFACES: campaigns with banq_service=1 may appear anywhere on the
+  app. The "GET NEW QUANTHOMS" floating dock slideout panel AND the
+  newquanthoms.html page feed show ONLY banq_service=1 campaigns.
+  Non-BANQ campaigns appear on regular QWK feed/homepage surfaces, never
+  in that dock or page. Enforcement = /api/ads/eligible filter.
+- Placeholder mocks stay (Rules 33/35) until real BANQ-service inventory
+  exists.
+
+DECISION V4 -- CREATIVE REQUIREMENT CHECK (QAP + media type):
+- Whenever a customer clicks an AD PACKAGE they enter their QAP number
+  (QAP-xxxxx, generated on mybmf.html advertising profile section).
+- Server-side check maps package format to profile media_type
+  (quanthom_ad_profiles.media_type + filename = primary file):
+  * Banner AD -> image required (image must detect image)
+  * Video AD -> video required (video must detect video)
+  * Audio-based packages -> audio required (audio must detect audio)
+  * Launch / Full Reach -> image OR video accepted
+- If the profile's primary media does not match, the flow returns the
+  clear message: "Ad requirement not complete -- [format] AD requires
+  a [format] (selected as primary file) in your advertising profile.
+  Yours is [url/image/audio/video]."
+- Pre-R2 reality: media upload is locked, so profiles are url-only and
+  image/video launches correctly fail this check -- exact message path
+  is testable now.
+
+BUILD ORDER (approved):
+1. Record docs (this subsection + change log).
+2. Backend schema: ad_banners media_type + banq_service columns,
+   banq_service_subscriptions table.
+3. Backend: launch-with-qap rewrite (new tiers banner/video/launch/
+   full_reach, media requirement check, BANQ opt-in quote, hold
+   campaign creation until payment is wired).
+4. Backend: /api/ads/eligible filters banq_service=1 only.
+5. Backend: video watch session start/complete -- first 30s+ watch per
+   cooldown = click-through unlock + QU reward (from 10, as indicated)
+   + full advertiser credit (6 QC); 15-29s = half credit (3 QC)
+   recorded in analytics; never QC to the viewer.
+6. Frontend: shared QAP launch flow on quanthomnetwork.html +
+   newquanthoms.html (QAP entry -> profile summary -> media check ->
+   BANQ opt-in -> order preview -> existing technical-review notice
+   until Stripe/R2).
+7. Frontend: video billing copy on all video mentions + in-app video
+   player cards in dock + newquanthoms feed.
+8. Verify on live server; report hard-refresh.
+
+### 23.10 NO DAY-BASED DURATIONS ON AD PACKAGES (Chris, 2026-09-03) -- RESUME HERE
+
+Status: IMPLEMENTED (backend + both pages + shared launch flow).
+
+RULE: All ad packages are fulfillment/click driven, NOT time driven.
+Remove every "7 days / 30 days / up to 30 days" campaign duration from
+all ad packages and from the launch flow. Advertisers buy a click
+budget, not a time window.
+
+- BANNER (and image ads) = calculated by CLICKS.
+  * $50 Banner = up to 500 clicks.
+  * Express ADS $200 = up to 2,500 clicks.
+  * Full Reach $450 = up to 6,000 clicks (no "or 30 days" wording).
+- VIDEO / AUDIO = calculated by 15s / 30s CLICK RATE with a
+  skip/swipe control:
+  * 15s+ watch = half click (3 QC from package budget).
+  * 30s+ watch = full click (6 QC from package budget).
+  * Viewer side unchanged (V1.2): first 30s+ watch per cooldown earns
+    QU from 10 as indicated; watching never pays QC.
+- Where applied:
+  * backend/routes/ads.js PACKAGE_TIERS: removed all duration_days
+    (banner/video were 7d, launch 14d, full_reach 30d); notes updated
+    to click/click-rate wording; quote no longer returns duration_days.
+  * quanthomnetwork.html: removed "7-day campaign" / "30-day campaign"
+    bullets, "$150 / 7 days" price note, and "campaign duration" from
+    the hero. Added click-based / 15s-30s click-rate bullets on each
+    placement card.
+  * newquanthoms.html popup: "$150 / 7 days" -> "$150".
+  * js/qap-launch.js: duration fields replaced with scope ("Up to 500
+    clicks", "15s / 30s click rate", "Up to 2,500 clicks", "Up to
+    6,000 clicks"); quote row relabelled Duration -> Scope.
+- Cooldowns stay (24h/48h/72h click cooldowns are anti-abuse, not
+  campaign durations) and remain on every package.
+
+### 23.11 BANQ AD SERVICE = $15/MONTH ALL-ADS SUBSCRIPTION (Chris, 2026-09-03) -- RESUME HERE
+
+Status: IMPLEMENTED (backend + launch flow + quanthomnetwork.html CTA).
+Supersedes the per-ad reading of V3 (one subscription row per launch).
+
+MODEL:
+- BANQ AD SERVICE is $15 per MONTH for ALL ads a user runs in that month.
+  ONE subscription, not per-ad. All monitoring + analytics show up in the
+  user's newquanthoms.com dashboard.
+- Same user activates another ad within the same month -> NO second monthly
+  BANQ charge (the month is already paid).
+- When the month runs out, the user pays another month to keep getting
+  further analytics.
+- Additional BANQ plans, tools and services exist and will grow, but those
+  EXTRA plans/services are purchased via newquanthoms.com (not the app
+  checkout).
+
+IMPLEMENTATION (qwkbrowser side):
+- backend/routes/ads.js launch-with-qap: checks for an active/paid BANQ
+  subscription covering the current period for the user
+  (status IN active/paid AND period_start <= now AND period_end >= now).
+  * Covered -> quote banq_covered=true, banq_price_usd=0, total unchanged.
+  * Not covered -> creates ONE pending row (user_id, qap_number,
+    amount_usd=15, status='pending', period_start=now, period_end=now+30d).
+  * banq_service_subscriptions is keyed by user_id (banner_id stays NULL
+    for user-wide subscriptions).
+- frontend/js/qap-launch.js: opt-in copy states the all-ads-month rule + the
+  newquanthoms.com dashboard + no-extra-charge-if-covered; quote shows
+  "Covered -- active this month ($0)" vs "$15/mo -- all ads this month";
+  success note adapts to covered state.
+- quanthomnetwork.html Section 3 CTA: NO announce-soon. BANQ AD SERVICE is
+  ACTIVE and visible after QAP verification (YES/NO opt-in in the launch
+  flow). Button scrolls to the placements and explains it is chosen with any
+  package after QAP verification. Note added: extra BANQ plans/tools/services
+  are purchased via newquanthoms.com.
+- TIMING (Chris): the moment TECHNICAL REVIEW is removed, the AD PACKAGE and
+  BANQ SERVICE activate AT THE SAME TIME (single checkout, pending row flips
+  to active on payment). Never staggered.
+
 ---
 
 ## 24. Change Log
@@ -700,6 +947,16 @@ This structure fits the BANQ system:
 |------|--------|
 | 2026-08-29 | Doc created from pre-spec provided by Chris + review agent. Full file change inventory and implementation order defined. Opt-in must appear on every ad launch surface including quanthomnetwork.html. |
 | 2026-08-29 | Added Section 23: Unified Advertising Page Structure (BANQ-AD-PAGE-UNIFY). One marketplace, two ways to buy: build-your-own placements + pre-built campaign packages. Popup shows summary, quanthomnetwork.html shows full details. |
+| 2026-09-03 | Chris set prices ($50 banner, $150 video, $200 Launch, $450 Full Reach) and held Publisher Network prices unannounced. Added Section 23.8: popup = partial preview only (QAP asked for some packages), full details only on quanthomnetwork.html, publisher form stays. Task recorded for resume. |
+| 2026-09-03 | Button behavior set: priced packages show "SERVICE IS DELAYED FOR TECHNICAL REVIEW" until R2/Stripe are connected; unpriced network packages show "AD PACKAGE WILL BE ANNOUNCE SOON". Video billing model sketched (15s=half click rate, 30s=full, 1 click rate = 6 QC) -- finalize with YouTube strategy. Publisher form + app chrome additions approved. |
+| 2026-09-03 | Section 23.9 added: FOUR new decisions locked (Q&A). V1: video reward corrected -- 30s+ watch = 10 QU flat to viewer, <30s = nothing; 3 QC/6 QC are advertiser-side budget credits only (replaces old 15s/30s note). V2: in-app video player cards with server-validated watch sessions. V3: BANQ AD SERVICE opt-in YES/NO at $15/mo on same Stripe checkout; banq_service=1 campaigns only in Get New Quanthoms dock + newquanthoms.html feed. V4: QAP entry on every package click with server-side media-type requirement check (image/image, video/video, audio/audio, launch accepts image or video). Approved build order recorded. |
+| 2026-09-03 | V1 REVOKED by Chris (same day): audience earns NOTHING for watching video ads -- bad business; enough credits already flow via factory raffles + amplification. V1.1: 30s+ watch only unlocks the click-through. 3 QC (15s+ half click) / 6 QC (30s+ full click) are advertiser-side package budget credits for analytics only, never user payout. All db.js / routes / frontend video work uses V1.1. |
+| 2026-09-03 | V1.2 FINAL (Chris clarification): viewers DO earn QU (hard units, never QC) on the FIRST watch of a video ad per cooldown -- from 10 QU upward as indicated on the ad, when watching more than 30 seconds. Same per-ad cooldown model as image clicks (24h). Repeat watches inside the cooldown unlock click-through but pay 0. V1.1 is superseded; code + copy use V1.2. |
+| 2026-09-03 | Section 23.10: ALL day-based durations removed from ad packages (IMPLEMENTED). Banner = click-based (500/2,500/6,000 clicks); video/audio = 15s/30s click rate (15s+ half click 3 QC, 30s+ full click 6 QC) with skip/swipe control; no "7 days" / "30 days" anywhere in packages or launch flow. Applied in ads.js PACKAGE_TIERS (duration_days removed, quote field dropped), quanthomnetwork.html cards + hero, newquanthoms.html popup, qap-launch.js scope fields (Duration row -> Scope). Cooldowns (24h/48h/72h) kept as anti-abuse, not durations. |
+| 2026-09-03 | Section 23.11 (IMPLEMENTED): BANQ AD SERVICE redefined as $15/month ALL-ADS subscription per user (supersedes per-ad V3 reading). One subscription covers every ad the user runs that month; no second charge for more ads in the same month; pay again when the month ends to keep analytics. All monitoring/analytics appear on the user's newquanthoms.com dashboard. Extra BANQ plans/tools/services are purchased via newquanthoms.com only. Backend launch-with-qap now checks for an active BANQ month (banq_covered) and only creates a pending row when uncovered; quote + frontend copy updated; quanthomnetwork.html BANQ CTA is ACTIVE (no announce-soon) and reachable after QAP verification; ad package + BANQ service go live together the moment technical review is removed. |
+| 2026-09-03 | docs/AD-SLOT-STUDY.md created: catalog of every ad slot across factory/homepage/dock/search/commerce/gamified/content pages mapped to YouTube/Instagram/Twitter/Facebook precedents, with the phased post-review implementation plan. Slot coordinates for individual pages are provisional and will be refined later. |
+| 2026-09-03 | AD-SLOT implementation plan REFINED + documented (doc-only; Chris approved documentation, build starts next session). All ad-slot code will be feature-flag gated (flags.ads_new_panel=false default) so users see nothing until technical review is removed; no fake ads live (Rules 33/35). Build order recorded in docs/AD-SLOT-STUDY.md: shared js/ad-slots.js + flag → factory feed every-6th-post + sidebar → homepage feed/sidebar → backend /api/ads/slots + rewarded/complete → search/retail/elist/raffle. Step 4 (Stripe checkout per package → campaign active → slots serve) locked until technical review + R2/Stripe ready. INTEGRATION-SETUP-ROADMAP.md launch table updated: Stripe = AWAITING KEY (code 100% ready incl. all 5 ad products in the 14-product seed script). |
+| 2026-09-03 | Section 23.12: Advertising products added to the Stripe catalog spec. Stripe currently has ZERO ad linkage (ads.js launch-with-qap deliberately holds: "Payment checkout opens once Stripe is connected (technical review)"). The 9-product roadmap list was currency/subscriptions only and MISSED advertising. Now 14 products total: 9 original + Banner Ad Placement $50 (one-time), Video Ad Placement $150 (one-time), Express ADS $200 (one-time), Full Reach Package $450 (one-time), BANQ AD SERVICE $15/mo (recurring). backend/scripts/seed-stripe-products.js extended to create all 14 idempotently; prices mirror PACKAGE_TIERS in routes/ads.js (keep in sync). docs/INTEGRATION-SETUP-ROADMAP.md §3.3A + §3.6 updated (premium price env vars). On technical-review removal: launch-with-qap opens a real Stripe checkout (package + optional BANQ month in one payment); webhook activates the campaign + BANQ month together. |
 
 ---
 
