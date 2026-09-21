@@ -1,17 +1,29 @@
 ﻿# BANQ Intelligence System -- Implementation Execution Plan
 
 > **ID:** BANQ-INTEL-IMPL
-> **Status:** SPEC -- ready for execution
+> **Status:** SPEC -- ready for execution (NOTHING BUILT -- see "How to Read")
 > **Created:** 2026-08-29
-> **Source:** Chris (2026-08-29) -- full 4-phase specification (16 tools, 8 modules)
+> **Source:** Chris (2026-08-29) -- full 4-phase specification
 > **Location:** docs/BANQ-INTELLIGENCE-IMPLEMENTATION-PLAN.md
-> **Master spec:** docs/BANQ-INTELLIGENCE-SYSTEM.md (summary)
+> **BUILD AUTHORITY:** THIS document. The counts it carries are the ones to plan
+> against: **4 phases, 37 build steps** (4 pre-build foundation steps + 33 product
+> steps: Phase 1 = 8, Phase 2 = 8, Phase 3 = 9, Phase 4 = 8), across 8 modules.
+> Earlier headers in this doc and in the system doc carried "16 tools" and "20
+> tools" respectively; both were wrong and both are corrected. Count STEPS here,
+> never a prose number.
+> **System overview:** docs/BANQ-INTELLIGENCE-SYSTEM.md (describes what the
+> system IS and the rules it obeys; it does not enumerate the build)
 > **Depends on:** BANQ-AD-MONITORING-PARTNERSHIP.md, BANQ-QWK-API-PARTNERSHIP.md, QAP-RELATED-TASK.md
 > **AGENTS.md rules:** Rule 5 (ASCII), Rule 8 (PowerShell), Rule 9/10 (placeholders), Rule 13 (JS inventory), Rule 16 (commit checkpoints), Rule 18 (nav updates)
 
 ---
 
 ## How to Read This Document
+
+**STATUS: none of this is built.** Verified 2026-09-21 against the repo: no
+campaign tables, no creative/journey/experiment tables, no `banq_config`, and
+no `/api/banq/*` route namespace (the only local namespace is `/api/auth/*`).
+Everything below is a plan.
 
 This is the **actionable execution plan** for coding agents. Each step tells you:
 - What to build

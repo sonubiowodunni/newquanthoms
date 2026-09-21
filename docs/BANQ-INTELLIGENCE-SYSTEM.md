@@ -1,13 +1,40 @@
 # BANQ Intelligence System -- Master Implementation Plan
 
 > **ID:** BANQ-INTELLIGENCE
-> **Status:** SPEC -- ready for implementation
+> **Status:** SPEC -- system overview. NOTHING BUILT (verified 2026-09-21).
 > **Created:** 2026-08-29
 > **Source:** Chris (2026-08-29) -- full 4-phase specification
 > **Location:** docs/BANQ-INTELLIGENCE-SYSTEM.md
-> **Pipeline:** docs/BANQ-MASTER-PIPELINE.md (BANQ-022)
+> **BUILD AUTHORITY:** docs/BANQ-INTELLIGENCE-IMPLEMENTATION-PLAN.md -- that
+> document enumerates the build (4 phases, 37 steps) and is what to plan and
+> track against. This document describes the SYSTEM: what it is, the four
+> phases, the eight modules, and the rules. Do not take a work count from this
+> file; see "Scope and counts" below.
+> **Pipeline:** docs/BANQ-MASTER-PIPELINE.md (BANQ-022 -- row added 2026-09-21;
+> this reference previously pointed at a pipeline item that did not exist)
 > **Depends on:** BANQ-AD-MONITORING-PARTNERSHIP.md, BANQ-QWK-API-PARTNERSHIP.md, QAP-RELATED-TASK.md
 > **AGENTS.md rules:** Rule 5 (ASCII), Rule 8 (PowerShell), Rule 9/10 (placeholders), Rule 13 (JS inventory), Rule 16 (commit checkpoints), Rule 18 (nav updates)
+
+---
+
+## Scope and counts
+
+Two documents describe this work at two levels, and they used to disagree about
+how much of it there is:
+
+| Document | Describes | Count it used to claim |
+|---|---|---|
+| `BANQ-INTELLIGENCE-IMPLEMENTATION-PLAN.md` | the BUILD (numbered steps) | "16 tools" in its own header |
+| `BANQ-INTELLIGENCE-SYSTEM.md` (this file) | the SYSTEM (capabilities, rules) | "20 tools" in its change log |
+| the plan's actual step headings | the truth | **37 steps** (4 pre-build + 33 product) |
+
+Resolution, 2026-09-21: **the implementation plan is the build authority and the
+count is 37 steps** -- Phase 1: 8, Phase 2: 8, Phase 3: 9, Phase 4: 8, plus 4
+pre-build foundation steps. This document no longer states a work count of its
+own; it points at the plan. Both headers were corrected.
+
+The rule this produced, now recorded in the repo AGENTS.md: when two documents
+describe the same scope, ONE is authoritative and the other references it.
 
 ---
 
@@ -619,7 +646,8 @@ At the end of Phase 4, BANQ is no longer simply an advertising analytics service
 
 | Date | Change |
 |------|--------|
-| 2026-08-29 | Doc created. Full 4-phase implementation plan organized from easiest to heaviest within each phase. 20 tools across 4 phases. References AGENTS.md rules throughout. |
+| 2026-08-29 | Doc created. Full 4-phase implementation plan organized from easiest to heaviest within each phase. References AGENTS.md rules throughout. |
+| 2026-09-21 | Count corrected. The original entry claimed "20 tools across 4 phases"; the implementation plan enumerates **37 build steps** (4 pre-build + 33 product) and its own header claimed "16 tools". Added "Scope and counts" naming the implementation plan as the build authority, and corrected the pipeline reference, which pointed at a BANQ-022 row that did not exist in the pipeline. No code exists for any of this yet. |
 
 ---
 

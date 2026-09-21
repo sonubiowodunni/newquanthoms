@@ -164,6 +164,14 @@ Each item has:
 
 ---
 
+### BANQ-022: BANQ Intelligence System (4 phases, 37 steps)
+- **Status:** NOT STARTED (verified 2026-09-21). Both intelligence docs referenced this row; it did not exist until now.
+- **Spec:** `docs/BANQ-INTELLIGENCE-IMPLEMENTATION-PLAN.md` (BUILD AUTHORITY -- 37 steps: 4 pre-build + 8 + 8 + 9 + 8) and `docs/BANQ-INTELLIGENCE-SYSTEM.md` (system overview)
+- **Dependencies:** BANQ-006 (auth, done). Pre-build step E0.1 requires a DB backup + commit checkpoint per Rule 16.
+- **Notes:** Phase 1 MONITOR, Phase 2 UNDERSTAND, Phase 3 LEARN, Phase 4 PLAN. No campaign tables, no creative/journey/experiment tables, no `banq_config` and no `/api/banq/*` namespace exist yet. Full step-by-step inventory in `docs/BANQ-REMAINING-WORK.md` section E.
+
+---
+
 ## Section 4: Status Summary
 
 | ID | Feature | Status | Spec |
@@ -189,6 +197,7 @@ Each item has:
 | BANQ-019 | Feature Flag System | PLANNED | NEEDED |
 | BANQ-020 | Verification Scripts | PLANNED | NEEDED |
 | BANQ-021 | Unified Advertising Page Structure | DONE (BANQ half) | docs/BANQ-021-IMPLEMENTATION-DESIGN.md |
+| BANQ-022 | BANQ Intelligence System | NOT STARTED (37 steps) | docs/BANQ-INTELLIGENCE-IMPLEMENTATION-PLAN.md |
 
 ---
 
