@@ -41,7 +41,9 @@ namespace.
 | A1 | Initial site build (BANQ-001) | committed 5c3be7d, 6 pages serving |
 | A2 | Independent auth (BANQ-006) | `backend/auth.js` + `db.js`, separate from QWK |
 | A3 | Packages page, billboard sidebar, AD-Packages popup, dashboard QAP banner (BANQ-002..005) | inline, working |
-| A4 | **BANQ-021 unified ad page -- BANQ standalone half** | `js/ad-catalog.js` + `js/ad-page.js` + rebuilt `packages.html` + popup + `verify-unified-ad-page.cjs` **18 PASS / 0 FAIL**, live on 3002 |
+| A4 | **BANQ-021 unified ad page -- BANQ standalone half** | `js/ad-catalog.js` + `js/ad-page.js` + rebuilt `packages.html` + popup + `verify-unified-ad-page.cjs` **18 PASS / 0 FAIL**, live on 3002. Committed db854a4, pushed. |
+| A5 | **Contact path is honest and real (C3)** | `backend/banq.js` + two tables + `admin-console.html`; the form only claims success on a stored row. Verified live 8/8: store, 429 rate limit, honeypot-as-spam, 401 without admin token, list, stats, status update, honest notification retry. |
+| A6 | **Doc truth pass** | Phantom seed-script claim corrected in both source docs; intelligence scope reconciled to one authority (37 steps); repo AGENTS.md gained wing rules WR-1/WR-2. Commits 67c3716, d9c41aa. |
 
 ---
 
@@ -63,7 +65,7 @@ namespace.
 |---|---|---|---|
 | C1 | Banner seed data (BANQ-007) | `NEEDED BACKEND...` S4 | RESOLVED AS A DOC BUG, NOT A BANQ TASK. The script is real (85 lines, 8 `[DEMO]` banners, idempotent) but lives at `qwkbrowser/backend/seed-banners.js` -- the BANQ-local path the docs claimed has never existed. It is therefore a QWK-side step to run, NOT a BANQ file to create: seeding `ad_banners` from BANQ would cross the ownership boundary between the two apps. BANQ reads the result through `/api/ads/*`. Until it is run, the feed shows demo mocks. |
 | C2 | Billboard declaration backend (BANQ-009): `POST /api/billboards/declare`, `GET /interest`, `GET /demand` + `billboard_declarations` table | `NEEDED BACKEND...` S1 | sidebar + demand table are placeholder until this lands |
-| C3 | Contact form backend (BANQ-010): `POST /api/contact` + `contact_messages`, rate limit 1/30s/IP | `NEEDED BACKEND...` S2 | today the form shows success and sends nothing -- the worst kind of bug |
+| C3 | ~~Contact form backend (BANQ-010)~~ | `NEEDED BACKEND...` S2 | **DONE 2026-09-21.** `POST /api/banq/contact` + `contact_messages` + `contact_notifications`, honeypot, 30s/IP rate limit, admin list/stats/status/delete/retry at `/api/banq/contact/*`, `admin-console.html`. The form no longer claims success without a stored row. Verified live: 8/8 checks. |
 | C4 | QAP launch backend (BANQ-011): `POST /api/ads/launch-with-qap` reachable via BANQ proxy | `NEEDED BACKEND...` S3 | the QWK endpoint EXISTS and the proxy now reaches it; what is missing is the client sending a valid catalog key (B4) |
 
 ---
@@ -196,7 +198,7 @@ Authority: `docs/BANQ-QWK-API-PARTNERSHIP.md`.
 | G4 | BANQ monitoring dashboard (the tools the $15 buys) + locked state | the subscription would gate nothing |
 | G5 | Pre-deploy checklist (`docs/PRE-DEPLOY.md`) | no release discipline |
 | G6 | Responsive audit of the new ad page against `docs/RESPONSIVE-BREAKPOINTS.md` | the new grid has a 2-column and 1-column rule added but never checked on a phone |
-| G7 | Commit checkpoints (`docs/COMMIT-CHECKPOINTS.md`) | the log exists and is empty; every change this session is uncommitted |
+| G7 | Commit checkpoints (`docs/COMMIT-CHECKPOINTS.md`) | the log exists and is stale/empty. Phase 1-3 work is committed and pushed (db854a4, 67c3716, d9c41aa); the log itself should be updated per change from now on |
 
 ---
 
@@ -219,6 +221,7 @@ Authority: `docs/BANQ-QWK-API-PARTNERSHIP.md`.
 
 | Date | Change |
 |---|---|
+| 2026-09-21 | Phases 1-3 of the four-problem plan executed: contact form made honest then given a real backend (C3 DONE), phantom seed-script claim corrected in the source docs, intelligence scope reconciled to one build authority, and the two wing rules added to AGENTS.md. All pushed. |
 | 2026-09-21 | File created. Full remaining-work inventory: BANQ-021 QWK half, 4 deferred backends, 9 pipeline items, the 37-step four-phase Intelligence System (none built), open API-partnership items, and the seven infrastructure gates. Nothing built by this document; it is an index. |
 
 ---

@@ -90,7 +90,7 @@ Each item has:
 - **Notes:** POST /api/billboards/declare (city, country, billboard_type, message). New table: billboard_declarations. GET /api/billboards/interest (top cities by count, last 7 days). GET /api/billboards/demand (all declarations for admin). Auth required. Without this, Billboard Interest sidebar uses placeholder data and demand stats table is static.
 
 ### BANQ-010: Contact Form Backend
-- **Status:** DEFERRED
+- **Status:** DONE (2026-09-21) -- `backend/banq.js` (`POST /api/banq/contact`), tables `contact_messages` + `contact_notifications`, honeypot, 30s/IP rate limit, admin routes (`/api/banq/contact/messages|stats`, PATCH status, DELETE), `admin-console.html`. The form no longer claims success unless a row was written. NOTE: the endpoint is `/api/banq/contact`, not the `/api/contact` this row originally specified -- the `/api/banq/*` namespace is where BANQ's own routes live.
 - **Spec:** `NEEDED BACKEND FOR BANQ WEBSITE.md` Section 2
 - **Dependencies:** BANQ-006
 - **Notes:** POST /api/contact (name, email, subject, message). New table: contact_messages. Rate limiting (1 per 30s per IP). No auth required (public form). Without this, contact form submissions are lost (toast shows success but nothing is sent).
@@ -185,7 +185,7 @@ Each item has:
 | BANQ-007 | Seed Banner Script | EXISTS IN QWK REPO, NOT RUN (BANQ copy intentionally not created) | qwkbrowser/backend/seed-banners.js |
 | BANQ-008 | Doc Rebranding | IN-PROGRESS | All docs in docs/ |
 | BANQ-009 | Billboard Declaration Backend | DEFERRED | NEEDED BACKEND Section 1 |
-| BANQ-010 | Contact Form Backend | DEFERRED | NEEDED BACKEND Section 2 |
+| BANQ-010 | Contact Form Backend | DONE | backend/banq.js |
 | BANQ-011 | QAP Validation Backend | DEFERRED | NEEDED BACKEND Section 3 |
 | BANQ-012 | Video Banner Dwell Tracking | PLANNED | NEEDED |
 | BANQ-013 | Advertiser Portal | PLANNED | NEEDED |

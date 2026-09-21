@@ -48,6 +48,41 @@ async function init() {
     )
   `);
 
+  // Contact messages (BANQ C3). The about.html form used to claim success and
+  // discard the message; this table is where a message actually lands.
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS contact_messages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      email TEXT NOT NULL,
+      subject TEXT,
+      body TEXT NOT NULL,
+      ip TEXT,
+      user_agent TEXT,
+      status TEXT DEFAULT 'new',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+  await db.execute(`CREATE INDEX IF NOT EXISTS idx_contact_created ON contact_messages(created_at DESC)`);
+  await db.execute(`CREATE INDEX IF NOT EXISTS idx_contact_ip ON contact_messages(ip, created_at DESC)`);
+
+  // Notification queue. A message is only reported as accepted once its row is
+  // written AND a notification row exists, so "success" never outruns the work.
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS contact_notifications (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      message_id INTEGER NOT NULL,
+      channel TEXT NOT NULL,
+      target TEXT,
+      status TEXT DEFAULT 'queued',
+      attempts INTEGER DEFAULT 0,
+      last_error TEXT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      sent_at DATETIME,
+      FOREIGN KEY (message_id) REFERENCES contact_messages(id) ON DELETE CASCADE
+    )
+  `);
+
   // Seed admin account (idempotent -- runs every boot)
   const adminAccount = {
     username: 'banqadmin',

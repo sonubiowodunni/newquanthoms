@@ -13,6 +13,7 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const { init } = require('./backend/db');
 const { router: authRouter } = require('./backend/auth');
+const { router: banqRouter } = require('./backend/banq');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
@@ -26,6 +27,10 @@ app.use(express.static(__dirname));
 
 // -- Auth routes (local, NOT proxied) --
 app.use('/api/auth', authRouter);
+
+// -- /api/banq/* -- BANQ's own namespace (local, NOT proxied).
+// First resident: the contact form. See backend/banq.js.
+app.use('/api/banq', banqRouter);
 
 // -- API proxy to QWK Browser backend (ads, profile, rewards) --
 // Only /api/ads/* and /api/profile/* are proxied. Auth is local.

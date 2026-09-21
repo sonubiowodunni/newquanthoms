@@ -53,9 +53,17 @@ INVENTORY -- LAST UPDATED: 2026-08-26
    Token-based using UUIDv4, stored as SHA-256(token) in sessions table.
    7-day session duration. Completely independent of QwkBrowser auth.
 
+4. backend/banq.js
+   The /api/banq/* namespace (local, NOT proxied). First resident is the contact
+   form: POST /contact (public, honeypot + 30s/IP rate limit, stores into
+   contact_messages and queues a contact_notifications row BEFORE answering ok)
+   plus admin routes (list, stats, status update, delete, notification retry).
+   Requires is_admin on the admin routes. Reason it exists: about.html used to
+   claim success and discard the message.
+
 --- FRONTEND (js/) ---
 
-4. js/app.js
+5. js/app.js
    Frontend API helpers. Exposes window.BANQ namespace. Token management
    (banq_token / banq_user in localStorage). fetchJson, qwkFetch (alias),
    login, checkAuth, logout, escapeHtml, formatTime, toast. API_BASE

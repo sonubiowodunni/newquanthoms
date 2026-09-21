@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0b10" />
+<title>Admin Console -- BANQ</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+<script src="js/app.js"></script>
+<style>
+.banq-admin-wrap { max-width: 1000px; margin: 0 auto; padding: 24px 20px; }
+.banq-admin-stats { display: flex; gap: 12px; flex-wrap: wrap; margin: 16px 0 20px; }
+.banq-admin-stat { flex: 1; min-width: 130px; background: var(--card); border: 1px solid var(--border2); border-radius: 12px; padding: 14px 16px; }
+.banq-admin-stat-n { font-family: var(--font-d); font-size: 24px; font-weight: 800; color: var(--accent); }
+.banq-admin-stat-l { font-size: 11px; color: var(--muted); font-family: var(--font-m); text-transform: uppercase; letter-spacing: 0.04em; }
+.banq-admin-chips { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+.banq-admin-chip { font-family: var(--font-m); font-size: 11px; padding: 6px 12px; border-radius: 99px; border: 1px solid var(--border2); background: var(--card); color: var(--text2); cursor: pointer; }
+.banq-admin-chip.active { border-color: var(--accent); color: var(--accent); }
+.banq-admin-msg { background: var(--card); border: 1px solid var(--border2); border-radius: 12px; padding: 16px; margin-bottom: 12px; }
+.banq-admin-msg-head { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; align-items: baseline; }
+.banq-admin-msg-name { font-family: var(--font-d); font-size: 15px; font-weight: 700; color: var(--text); }
+.banq-admin-msg-meta { font-family: var(--font-m); font-size: 11px; color: var(--muted); }
+.banq-admin-msg-body { font-size: 13px; color: var(--text2); line-height: 1.6; margin: 10px 0 12px; white-space: pre-wrap; }
+.banq-admin-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.banq-admin-btn { font-family: var(--font-m); font-size: 11px; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border2); background: var(--card2); color: var(--text); cursor: pointer; }
+.banq-admin-btn:hover { border-color: var(--accent); color: var(--accent); }
+.banq-admin-btn.danger:hover { border-color: var(--accent-r); color: var(--accent-r); }
+.banq-admin-status { font-size: 12px; color: var(--muted); font-family: var(--font-m); margin: 10px 0; }
+</style>
+</head>
+<body>
+
+<header class="banq-header">
+  <div class="banq-container banq-header-inner">
+    <a href="/" class="banq-logo">
+      <img src="assets/logo.svg" alt="BANQ" />
+      <span>New Quanthoms</span>
+    </a>
+    <nav class="banq-nav">
+      <a href="/">Feed</a>
+      <a href="billboards.html">Billboards</a>
+      <a href="packages.html">Packages</a>
+      <a href="about.html">About</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="admin-console.html">Admin</a>
+    </nav>
+    <div id="banqUserArea"></div>
+  </div>
+</header>
+
+<div class="banq-admin-wrap">
+  <h1 style="font-family:var(--font-d);font-size:22px;font-weight:800;color:var(--text)">Admin Console</h1>
+  <div id="banqAdminStatus" class="banq-admin-status">Checking access...</div>
+
+  <div id="banqAdminPanel" style="display:none">
+    <div class="banq-admin-stats" id="banqAdminStats"></div>
+    <div class="banq-admin-chips" id="banqAdminChips"></div>
+    <div style="margin-bottom:14px">
+      <button class="banq-admin-btn" id="banqRetryNotifications">Retry queued notifications</button>
+    </div>
+    <div id="banqAdminMessages"></div>
+  </div>
+</div>
+
+<footer class="banq-footer">
+  <div class="banq-container">
+    Billboard Agency for New Quanthoms (BANQ) -- A Quanthom Lumina company.
+  </div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  var STATUSES = ['new', 'read', 'responded', 'spam'];
+  var current = '';
+
+  function esc(s) {
+    if (s == null) return '';
+    return String(s).replace(/[&<>"']/g, function(c) {
+      return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+    });
+  }
+
+  function status(text) {
+    var el = document.getElementById('banqAdminStatus');
+    if (el) el.textContent = text;
+  }
+
+  function renderUserArea() {
+    var area = document.getElementById('banqUserArea');
+    if (!area) return;
+    if (BANQ.signedIn()) {
+      var u = BANQ.getUser();
+      area.innerHTML = '<div class="banq-user-badge"><span>' + esc(u && u.username || 'User') + '</span></div>' +
+        '<button class="banq-signin-btn" id="banqLogoutBtn" style="margin-left:8px">Sign Out</button>';
+      var b = document.getElementById('banqLogoutBtn');
+      if (b) b.addEventListener('click', function() { BANQ.logout(); });
+    } else {
+      area.innerHTML = '<a href="login.html?redirect=admin-console.html" class="banq-signin-btn">Sign In</a>';
+    }
+  }
+
+  function loadStats() {
+    return BANQ.fetchJson('/banq/contact/stats').then(function(d) {
+      var labels = { new: 'New', read: 'Read', responded: 'Responded', spam: 'Spam' };
+      var html = STATUSES.map(function(s) {
+        var n = (d.by_status && d.by_status[s]) || 0;
+        return '<div class="banq-admin-stat"><div class="banq-admin-stat-n">' + n + '</div>' +
+          '<div class="banq-admin-stat-l">' + labels[s] + '</div></div>';
+      }).join('');
+      html += '<div class="banq-admin-stat"><div class="banq-admin-stat-n">' + d.notifications_pending + '</div>' +
+        '<div class="banq-admin-stat-l">Notifications pending</div></div>';
+      document.getElementById('banqAdminStats').innerHTML = html;
+    });
+  }
+
+  function loadMessages() {
+    var path = '/banq/contact/messages' + (current ? '?status=' + encodeURIComponent(current) : '');
+    return BANQ.fetchJson(path).then(function(d) {
+      var box = document.getElementById('banqAdminMessages');
+      if (!d.messages || !d.messages.length) {
+        box.innerHTML = '<div class="banq-empty">No messages' + (current ? ' with status ' + esc(current) : '') + '.</div>';
+        return;
+      }
+      box.innerHTML = d.messages.map(function(m) {
+        var actions = STATUSES.filter(function(s) { return s !== m.status; }).map(function(s) {
+          return '<button class="banq-admin-btn" data-set="' + s + '" data-id="' + m.id + '">Mark ' + s + '</button>';
+        }).join('');
+        return '<div class="banq-admin-msg">' +
+          '<div class="banq-admin-msg-head">' +
+            '<div class="banq-admin-msg-name">' + esc(m.name) + ' &lt;' + esc(m.email) + '&gt;</div>' +
+            '<div class="banq-admin-msg-meta">#' + m.id + ' | ' + esc(m.status) + ' | ' + esc(m.created_at) + '</div>' +
+          '</div>' +
+          (m.subject ? '<div class="banq-admin-msg-meta">' + esc(m.subject) + '</div>' : '') +
+          '<div class="banq-admin-msg-body">' + esc(m.body) + '</div>' +
+          '<div class="banq-admin-actions">' + actions +
+            '<button class="banq-admin-btn danger" data-del="' + m.id + '">Delete</button>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      wireActions();
+    });
+  }
+
+  function wireActions() {
+    document.querySelectorAll('[data-set]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.getAttribute('data-id');
+        var s = this.getAttribute('data-set');
+        BANQ.fetchJson('/banq/contact/messages/' + id, { method: 'PATCH', body: JSON.stringify({ status: s }) })
+          .then(function() { BANQ.toast('Marked ' + s, 'success'); return refresh(); })
+          .catch(function() { BANQ.toast('Could not update', 'error'); });
+      });
+    });
+    document.querySelectorAll('[data-del]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.getAttribute('data-del');
+        BANQ.fetchJson('/banq/contact/messages/' + id, { method: 'DELETE' })
+          .then(function() { BANQ.toast('Deleted', 'success'); return refresh(); })
+          .catch(function() { BANQ.toast('Could not delete', 'error'); });
+      });
+    });
+  }
+
+  function wireChips() {
+    var chips = [''].concat(STATUSES);
+    document.getElementById('banqAdminChips').innerHTML = chips.map(function(s) {
+      return '<button class="banq-admin-chip' + (s === current ? ' active' : '') + '" data-chip="' + s + '">' + (s || 'All') + '</button>';
+    }).join('');
+    document.querySelectorAll('[data-chip]').forEach(function(c) {
+      c.addEventListener('click', function() {
+        current = this.getAttribute('data-chip');
+        wireChips();
+        loadMessages().catch(function() {});
+      });
+    });
+  }
+
+  function refresh() {
+    return Promise.all([loadStats(), loadMessages()]).catch(function() {});
+  }
+
+  function init() {
+    renderUserArea();
+
+    if (!BANQ.signedIn()) {
+      status('Sign in with an admin account to read messages.');
+      return;
+    }
+
+    BANQ.checkAuth().then(function(user) {
+      if (!user || !user.is_admin) {
+        status('This account is not an admin.');
+        return;
+      }
+      status('Signed in as ' + user.username + ' (admin).');
+      document.getElementById('banqAdminPanel').style.display = 'block';
+      wireChips();
+      refresh();
+
+      document.getElementById('banqRetryNotifications').addEventListener('click', function() {
+        BANQ.fetchJson('/banq/contact/notifications/retry', { method: 'POST', body: JSON.stringify({}) })
+          .then(function(d) {
+            BANQ.toast(d.note || ('Attempted ' + d.attempted + ', sent ' + d.sent), 'success');
+            return refresh();
+          })
+          .catch(function() { BANQ.toast('Retry failed', 'error'); });
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
