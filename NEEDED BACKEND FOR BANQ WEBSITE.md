@@ -81,17 +81,30 @@ The BANQ site runs on port 3002 and proxies API requests to the QwkBrowser backe
 
 ## 4. Seed Banner Data
 
-**Status:** DONE (script created, needs running)
+**Status:** EXISTS IN THE WRONG REPO (corrected 2026-09-21)
 
-**What it does:** Seeds 8 placeholder banner rows in `ad_banners` table so `GET /api/ads/public` returns real data instead of empty array.
+**What it does:** Seeds 8 placeholder banner rows in `ad_banners` so `GET /api/ads/public` returns real data instead of an empty array.
 
-**Current state:**
-- Seed script created at `backend/seed-banners.js`
-- Inserts 8 `[DEMO]` prefixed banners with various targeting types
-- Idempotent (checks for existing demo banners before inserting)
-- Script needs to be run: `node backend/seed-banners.js`
+**Current state (verified on disk, 2026-09-21):**
+- The script EXISTS at `qwkbrowser/backend/seed-banners.js` -- **not** at a
+  BANQ-local `backend/seed-banners.js`. This document previously claimed the
+  BANQ path, which is a path that has never existed. Anyone who looked for it
+  in this repo was sent after a phantom.
+- It is the exact script described here: 8 `[DEMO]`-prefixed banners with
+  worldwide / country / keyword targeting, idempotent, 85 lines, writes to
+  `qwkbrowser/data/qwkbrowser.db`.
+- It has not been run yet.
 
-**Impact:** Without running the seed, the BANQ feed shows mock banners from frontend JS instead of real DB rows.
+**Decision (2026-09-21): DEFER, and do not create a BANQ-local copy.**
+The `ad_banners` table belongs to QwkBrowser, which owns the advertising
+infrastructure; BANQ owns auth and the monitoring layer. A BANQ script that
+wrote rows into QWK's database directly would cross the ownership boundary the
+API-partnership design exists to keep clean. The seed is therefore a QWK-side
+step, run from that repo, and BANQ reads the result through the proxy it
+already has (`/api/ads/*`).
+
+**Impact:** until that QWK-side seed is run, the BANQ feed shows mock banners
+from frontend JS. That is a demo-data gap, not a BANQ bug.
 
 ---
 
@@ -102,6 +115,6 @@ The BANQ site runs on port 3002 and proxies API requests to the QwkBrowser backe
 | 1 | Billboard Declaration Endpoint | DEFERRED | No (placeholder data works) |
 | 2 | Contact Form Backend | DEFERRED | No (toast shows success) |
 | 3 | QAP Integration | PARTIALLY DONE | No (frontend cosmetic only) |
-| 4 | Seed Banner Data | DONE (needs running) | No (script ready) |
+| 4 | Seed Banner Data | EXISTS IN QWK REPO, NOT RUN (BANQ copy intentionally NOT created) | No (demo data only) |
 
 None of these block the site from functioning. All pages work with placeholder/mock data. These are enhancements that make the site fully functional end-to-end.

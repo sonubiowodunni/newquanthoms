@@ -223,7 +223,14 @@
       <input class="banq-contact-input" id="banqContactEmail" placeholder="Your email" />
       <input class="banq-contact-input" id="banqContactSubject" placeholder="Subject" />
       <textarea class="banq-contact-input banq-contact-textarea" id="banqContactMsg" placeholder="Your message"></textarea>
+      <!-- Honeypot: a real person never fills this. Hidden from sight and from
+           screen readers, never focusable. Only a bot completes it. -->
+      <input class="banq-contact-input" id="banqContactWebsite" name="website"
+             tabindex="-1" autocomplete="off" aria-hidden="true"
+             style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
       <button class="banq-contact-btn" id="banqContactBtn">Send Message</button>
+      <!-- Inline status, so the result is not only a 3-second toast. -->
+      <div id="banqContactStatus" style="font-size:12px;font-family:var(--font-m);margin-top:10px;line-height:1.6"></div>
     </div>
   </div>
 
@@ -264,20 +271,70 @@
     }
   }
 
+  var FALLBACK_EMAIL = 'banq@quanthomlumina.com';
+  var NOT_ACCEPTING = "We're not accepting messages yet -- please email " + FALLBACK_EMAIL + '.';
+
+  function field(id) {
+    var el = document.getElementById(id);
+    return el ? el.value : '';
+  }
+
+  function setContactStatus(text, kind) {
+    var el = document.getElementById('banqContactStatus');
+    if (!el) return;
+    if (!text) { el.textContent = ''; return; }
+    el.textContent = text;
+    el.style.color = kind === 'success' ? 'var(--accent-g)' : 'var(--accent-r)';
+  }
+
+  /**
+   * The form used to claim success and discard the message. It now claims
+   * success ONLY when the backend has written the row and queued the
+   * notification; every other outcome says so plainly and gives the email
+   * address, which is the truth the user can act on.
+   */
   function handleContact() {
-    var name = document.getElementById('banqContactName').value.trim();
-    var email = document.getElementById('banqContactEmail').value.trim();
-    var msg = document.getElementById('banqContactMsg').value.trim();
+    var name = field('banqContactName').trim();
+    var email = field('banqContactEmail').trim();
+    var subject = field('banqContactSubject').trim();
+    var message = field('banqContactMsg').trim();
+    var honeypot = field('banqContactWebsite');
+
     if (!name) { BANQ.toast('Name is required', 'error'); return; }
     if (!email) { BANQ.toast('Email is required', 'error'); return; }
-    if (!msg) { BANQ.toast('Message is required', 'error'); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { BANQ.toast('That email address does not look right', 'error'); return; }
+    if (!message) { BANQ.toast('Message is required', 'error'); return; }
 
-    // No backend endpoint for contact yet -- show success message
-    BANQ.toast('Message sent. We will contact you at ' + email, 'success');
-    document.getElementById('banqContactName').value = '';
-    document.getElementById('banqContactEmail').value = '';
-    document.getElementById('banqContactSubject').value = '';
-    document.getElementById('banqContactMsg').value = '';
+    var btn = document.getElementById('banqContactBtn');
+    setContactStatus('');
+    if (btn) { btn.disabled = true; btn.textContent = 'Sending...'; }
+
+    BANQ.fetchJson('/banq/contact', {
+      method: 'POST',
+      body: JSON.stringify({
+        name: name,
+        email: email,
+        subject: subject,
+        message: message,
+        website: honeypot
+      })
+    }).then(function(res) {
+      // Success is only success when the server says the message was stored.
+      if (!res || res.ok !== true) throw new Error('not_stored');
+      var done = 'Message received. We will reply to ' + email + '.';
+      BANQ.toast(done, 'success');
+      setContactStatus(done, 'success');
+      ['banqContactName', 'banqContactEmail', 'banqContactSubject', 'banqContactMsg'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+    }).catch(function() {
+      // No endpoint yet, or the write failed. Either way: never claim delivery.
+      BANQ.toast(NOT_ACCEPTING, 'error');
+      setContactStatus(NOT_ACCEPTING, 'error');
+    }).then(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Send Message'; }
+    });
   }
 
   function init() {
