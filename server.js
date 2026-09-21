@@ -40,6 +40,17 @@ app.use('/api/profile', createProxyMiddleware({
   pathRewrite: { '^/api/profile': '/api/profile' }
 }));
 
+// -- QAP read-through (BANQ-021) --
+// A QAP number identifies an advertising profile issued by QwkBrowser. The
+// partner-facing lookup is public on the QWK side and lives at
+// GET /api/ad-profile/<QAP> (no /qap/ segment). Without this the launch flow
+// could only check the shape of a QAP, never whether it exists.
+app.use('/api/ad-profile', createProxyMiddleware({
+  target: QWK_API_URL,
+  changeOrigin: true,
+  pathRewrite: { '^/api/ad-profile': '/api/ad-profile' }
+}));
+
 // -- SPA fallback (serve index.html for unknown routes) --
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

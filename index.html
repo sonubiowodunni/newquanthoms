@@ -11,6 +11,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css" />
 <script src="js/app.js"></script>
+<script src="js/ad-catalog.js"></script>
+<script src="js/ad-page.js"></script>
 </head>
 <body>
 
@@ -337,42 +339,12 @@
 <div class="banq-modal-overlay" id="banqAdPackagesModal">
   <div class="banq-modal">
     <button class="banq-modal-close" id="banqAdPackagesModalClose">X</button>
-    <div class="banq-modal-title">New Quanthoms AD-Packages</div>
-    <div class="banq-modal-sub">Enter your QAP number into a package to launch your ad</div>
+    <div class="banq-modal-title">AD Packages</div>
+    <div class="banq-modal-sub">A preview of the marketplace. Full details, targeting and launch options are on the Packages page.</div>
 
-    <div class="banq-pkg-popup-item">
-      <div class="banq-pkg-popup-name">Starter Banner</div>
-      <div class="banq-pkg-popup-price">$50 / 7 days</div>
-      <div class="banq-pkg-popup-desc">Image banner, 10 QU/click, up to 500 clicks, worldwide targeting, 24h cooldown.</div>
-      <div class="banq-pkg-popup-qap">
-        <input class="banq-pkg-popup-qap-input" placeholder="QAP-XXXXXXX" data-pkg="starter" />
-        <button class="banq-pkg-popup-qap-btn" data-pkg-btn="starter">Launch</button>
-      </div>
-    </div>
-
-    <div class="banq-pkg-popup-item">
-      <div class="banq-pkg-popup-name">Premium Banner</div>
-      <div class="banq-pkg-popup-price">$200 / 14 days</div>
-      <div class="banq-pkg-popup-desc">Image or video, 25 QU/click, up to 2,500 clicks, country/keyword targeting, 48h cooldown, priority placement.</div>
-      <div class="banq-pkg-popup-qap">
-        <input class="banq-pkg-popup-qap-input" placeholder="QAP-XXXXXXX" data-pkg="premium" />
-        <button class="banq-pkg-popup-qap-btn" data-pkg-btn="premium">Launch</button>
-      </div>
-    </div>
-
-    <div class="banq-pkg-popup-item">
-      <div class="banq-pkg-popup-name">Sponsored Feed</div>
-      <div class="banq-pkg-popup-price">$500 / 30 days</div>
-      <div class="banq-pkg-popup-desc">Video or image, 50 QU/click, up to 6,000 clicks, full targeting, 72h cooldown, top placement, dedicated manager.</div>
-      <div class="banq-pkg-popup-qap">
-        <input class="banq-pkg-popup-qap-input" placeholder="QAP-XXXXXXX" data-pkg="sponsored" />
-        <button class="banq-pkg-popup-qap-btn" data-pkg-btn="sponsored">Launch</button>
-      </div>
-    </div>
-
-    <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--font-m);text-align:center">
-      QAP = Quanthom Advertising Profile Number. Get yours on QwkBrowser.
-    </div>
+    <!-- Rendered from js/ad-catalog.js so this preview cannot disagree with the
+         full page. Partial by design: two bullets per package (Section 23.8). -->
+    <div id="banqAdPackagesBody"></div>
   </div>
 </div>
 
@@ -482,21 +454,10 @@
       closeModal('banqAdPackagesModal');
     });
 
-    // AD-Packages popup launch buttons (Rule 29)
-    var launchBtns = document.querySelectorAll('[data-pkg-btn]');
-    launchBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var pkg = this.getAttribute('data-pkg-btn');
-        var input = document.querySelector('[data-pkg="' + pkg + '"]');
-        var qap = input ? input.value.trim() : '';
-        if (!qap) { BANQ.toast('Enter your QAP number for ' + pkg, 'error'); return; }
-        if (!qap.match(/^QAP-[A-Z0-9]{6,}$/i)) { BANQ.toast('Invalid QAP format (e.g. QAP-26384J3)', 'error'); return; }
-        BANQ.toast('Launching ' + pkg + ' package for ' + qap + '...', 'success');
-        setTimeout(function() {
-          window.location.href = 'dashboard.html?qap=' + encodeURIComponent(qap) + '&pkg=' + encodeURIComponent(pkg);
-        }, 1200);
-      });
-    });
+    // AD-Packages popup body -- the PARTIAL preview, rendered from the catalog.
+    // The old per-card launch wiring is gone: it redirected to dashboard.html
+    // with pkg=starter|premium|sponsored, keys no billing endpoint accepts.
+    if (window.BANQ_AD_PAGE) window.BANQ_AD_PAGE.mountPopup('banqAdPackagesBody');
 
     // Close modals on overlay click
     document.querySelectorAll('.banq-modal-overlay').forEach(function(overlay) {

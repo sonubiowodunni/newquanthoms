@@ -4,71 +4,15 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="theme-color" content="#0a0b10" />
-<title>AD-Packages -- New Quanthoms</title>
+<title>AD Packages -- BANQ</title>
 <link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css" />
 <script src="js/app.js"></script>
-<style>
-.banq-pkg-hero { text-align: center; padding: 40px 20px 20px; }
-.banq-pkg-hero-title { font-family: var(--font-d); font-size: 26px; font-weight: 800; color: var(--text); margin-bottom: 10px; }
-.banq-pkg-hero-sub { font-size: 14px; color: var(--text2); max-width: 600px; margin: 0 auto; line-height: 1.6; }
-.banq-pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
-.banq-pkg-card {
-  background: var(--card); border: 1px solid var(--border2); border-radius: 14px;
-  padding: 24px; position: relative; transition: border-color 0.2s, transform 0.15s;
-}
-.banq-pkg-card:hover { border-color: rgba(240,163,64,0.30); transform: translateY(-2px); }
-.banq-pkg-card.featured { border-color: rgba(240,163,64,0.35); background: linear-gradient(180deg, rgba(240,163,64,0.04), var(--card)); }
-.banq-pkg-badge {
-  position: absolute; top: 12px; right: 12px;
-  font-size: 9px; font-family: var(--font-m); font-weight: 600;
-  color: var(--accent); background: rgba(240,163,64,0.12);
-  border: 1px solid rgba(240,163,64,0.25); padding: 2px 8px; border-radius: 99px;
-  text-transform: uppercase; letter-spacing: 0.04em;
-}
-.banq-pkg-name { font-family: var(--font-d); font-size: 18px; font-weight: 800; color: var(--text); margin-bottom: 6px; }
-.banq-pkg-price { font-family: var(--font-d); font-size: 28px; font-weight: 800; color: var(--accent); margin-bottom: 4px; }
-.banq-pkg-period { font-size: 11px; color: var(--muted); font-family: var(--font-m); margin-bottom: 16px; }
-.banq-pkg-features { list-style: none; padding: 0; margin: 0 0 20px 0; }
-.banq-pkg-features li {
-  font-size: 12px; color: var(--text2); font-family: var(--font-m);
-  padding: 5px 0; padding-left: 18px; position: relative; line-height: 1.5;
-}
-.banq-pkg-features li::before {
-  content: '\2713'; position: absolute; left: 0; color: var(--accent-g); font-weight: 700;
-}
-.banq-pkg-features li.unavailable { color: var(--muted); }
-.banq-pkg-features li.unavailable::before { content: '\2717'; color: var(--muted); }
-.banq-pkg-btn {
-  display: block; width: 100%; padding: 12px; border-radius: 10px;
-  background: var(--accent); color: #0a0b10; border: none;
-  font-family: var(--font-b); font-weight: 700; font-size: 13px;
-  cursor: pointer; text-align: center; text-decoration: none;
-  transition: filter 0.15s, transform 0.1s;
-}
-.banq-pkg-btn:hover { filter: brightness(1.1); }
-.banq-pkg-btn:active { transform: scale(0.98); }
-.banq-pkg-btn.secondary { background: var(--card2); color: var(--text); border: 1px solid var(--border2); }
-.banq-pkg-qap-section {
-  background: var(--card); border: 1px solid var(--border2); border-radius: 14px;
-  padding: 24px; margin-top: 28px; text-align: center;
-}
-.banq-pkg-qap-title { font-family: var(--font-d); font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
-.banq-pkg-qap-desc { font-size: 13px; color: var(--text2); max-width: 500px; margin: 0 auto 16px; line-height: 1.6; }
-.banq-pkg-qap-form { display: flex; gap: 10px; max-width: 400px; margin: 0 auto; }
-.banq-pkg-qap-input {
-  flex: 1; background: var(--surface); border: 1px solid var(--border2); border-radius: 8px;
-  color: var(--text); font-family: var(--font-m); font-size: 13px; padding: 12px 14px; outline: none;
-  transition: border-color 0.15s;
-}
-.banq-pkg-qap-input:focus { border-color: var(--accent); }
-.banq-pkg-qap-input::placeholder { color: var(--muted); }
-@media (max-width: 1024px) { .banq-pkg-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 768px) { .banq-pkg-grid { grid-template-columns: 1fr; } .banq-pkg-qap-form { flex-direction: column; } }
-</style>
+<script src="js/ad-catalog.js"></script>
+<script src="js/ad-page.js"></script>
 </head>
 <body>
 
@@ -90,83 +34,11 @@
   </div>
 </header>
 
-<!-- Content -->
+<!-- Content -- rendered from js/ad-catalog.js by js/ad-page.js.
+     No package name, price or bullet is written in this file, on purpose:
+     that was how the page and the popup drifted apart. -->
 <div class="banq-container" style="padding:24px 20px;max-width:1100px">
-
-  <!-- Hero -->
-  <div class="banq-pkg-hero">
-    <div class="banq-pkg-hero-title">New Quanthoms AD-Packages</div>
-    <div class="banq-pkg-hero-sub">Choose from our advertising packages below. Enter your QAP (Quanthom Advertising Profile) number to launch your ad campaign. QAP numbers are issued when you create an advertising profile on QwkBrowser.</div>
-  </div>
-
-  <!-- Package cards -->
-  <div class="banq-pkg-grid">
-    <!-- Starter -->
-    <div class="banq-pkg-card">
-      <div class="banq-pkg-name">Starter Banner</div>
-      <div class="banq-pkg-price">$50</div>
-      <div class="banq-pkg-period">per campaign / 7 days</div>
-      <ul class="banq-pkg-features">
-        <li>Image banner ad on public feed</li>
-        <li>10 QU reward per click</li>
-        <li>Up to 500 clicks</li>
-        <li>Worldwide targeting</li>
-        <li>24h cooldown per user</li>
-        <li>Basic analytics (clicks, impressions)</li>
-      </ul>
-      <button class="banq-pkg-btn secondary" data-pkg="starter" data-price="$50">Select Starter</button>
-    </div>
-
-    <!-- Premium (featured) -->
-    <div class="banq-pkg-card featured">
-      <div class="banq-pkg-badge">Popular</div>
-      <div class="banq-pkg-name">Premium Banner</div>
-      <div class="banq-pkg-price">$200</div>
-      <div class="banq-pkg-period">per campaign / 14 days</div>
-      <ul class="banq-pkg-features">
-        <li>Image or video banner ad</li>
-        <li>25 QU reward per click</li>
-        <li>Up to 2,500 clicks</li>
-        <li>Country or keyword targeting</li>
-        <li>48h cooldown per user</li>
-        <li>Full analytics dashboard</li>
-        <li>Priority feed placement</li>
-      </ul>
-      <button class="banq-pkg-btn" data-pkg="premium" data-price="$200">Select Premium</button>
-    </div>
-
-    <!-- Sponsored -->
-    <div class="banq-pkg-card">
-      <div class="banq-pkg-name">Sponsored Feed</div>
-      <div class="banq-pkg-price">$500</div>
-      <div class="banq-pkg-period">per campaign / 30 days</div>
-      <ul class="banq-pkg-features">
-        <li>Video or image banner</li>
-        <li>50 QU reward per click</li>
-        <li>Up to 6,000 clicks</li>
-        <li>Full targeting (country + keyword)</li>
-        <li>72h cooldown per user</li>
-        <li>Advanced analytics + CTR</li>
-        <li>Top feed placement + sticky</li>
-        <li>Dedicated account manager</li>
-      </ul>
-      <button class="banq-pkg-btn secondary" data-pkg="sponsored" data-price="$500">Select Sponsored</button>
-    </div>
-  </div>
-
-  <!-- QAP entry section -->
-  <div class="banq-pkg-qap-section">
-    <div class="banq-pkg-qap-title">Have a QAP Number?</div>
-    <div class="banq-pkg-qap-desc">Enter your Quanthom Advertising Profile (QAP) number below to link your advertising profile and launch your selected package. QAP numbers are issued on QwkBrowser when you create an advertising profile on mybmf.html.</div>
-    <div class="banq-pkg-qap-form">
-      <input class="banq-pkg-qap-input" id="banqQapInput" placeholder="e.g. QAP-26384J3" />
-      <button class="banq-pkg-btn" id="banqQapSubmitBtn" style="width:auto;padding:12px 28px">Launch Ad</button>
-    </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:10px;font-family:var(--font-m)">
-      Don't have a QAP number? <a href="https://localhost:3001/mybmf.html" target="_blank">Create an advertising profile on QwkBrowser</a>
-    </div>
-  </div>
-
+  <div id="banqPackagesPage"></div>
 </div>
 
 <!-- Footer -->
@@ -180,8 +52,6 @@
 <script>
 (function() {
   'use strict';
-
-  var selectedPackage = null;
 
   function esc(s) {
     if (s == null) return '';
@@ -210,51 +80,9 @@
     renderUserArea();
     BANQ.checkAuth().then(function(user) { if (user) renderUserArea(); });
 
-    // Wire package select buttons (Rule 29)
-    var pkgBtns = document.querySelectorAll('[data-pkg]');
-    pkgBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        selectedPackage = {
-          pkg: this.getAttribute('data-pkg'),
-          price: this.getAttribute('data-price')
-        };
-        // Highlight selected
-        pkgBtns.forEach(function(b) { b.style.opacity = '1'; });
-        this.style.opacity = '0.6';
-        BANQ.toast('Selected: ' + selectedPackage.pkg + ' (' + selectedPackage.price + ')', 'success');
-        // Scroll to QAP section
-        var qapSection = document.querySelector('.banq-pkg-qap-section');
-        if (qapSection) qapSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Focus QAP input
-        var qapInput = document.getElementById('banqQapInput');
-        if (qapInput) qapInput.focus();
-      });
-    });
-
-    // Wire QAP submit (Rule 29)
-    var submitBtn = document.getElementById('banqQapSubmitBtn');
-    if (submitBtn) submitBtn.addEventListener('click', function() {
-      var qap = document.getElementById('banqQapInput').value.trim();
-      if (!qap) { BANQ.toast('Enter your QAP number', 'error'); return; }
-      if (!qap.match(/^QAP-[A-Z0-9]{6,}$/i)) { BANQ.toast('Invalid QAP format (e.g. QAP-26384J3)', 'error'); return; }
-      if (!selectedPackage) { BANQ.toast('Select a package first', 'error'); return; }
-
-      // QAP validation will go through backend when ready
-      // For now, show a success message
-      BANQ.toast('Launching ' + selectedPackage.pkg + ' package for ' + qap + '. Redirecting to dashboard...', 'success');
-      setTimeout(function() {
-        window.location.href = 'dashboard.html?qap=' + encodeURIComponent(qap) + '&pkg=' + encodeURIComponent(selectedPackage.pkg);
-      }, 1500);
-    });
-
-    // Enter key on QAP input
-    var qapInput = document.getElementById('banqQapInput');
-    if (qapInput) qapInput.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        var btn = document.getElementById('banqQapSubmitBtn');
-        if (btn) btn.click();
-      }
-    });
+    // The whole marketplace: four placements, two campaign packages, the BANQ
+    // monitoring service and the QAP explainer. All from the catalog.
+    if (window.BANQ_AD_PAGE) window.BANQ_AD_PAGE.mountPage('banqPackagesPage');
   }
 
   if (document.readyState === 'loading') {

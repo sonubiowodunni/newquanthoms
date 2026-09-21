@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/styles.css" />
 <script src="js/app.js"></script>
+<script src="js/ad-catalog.js"></script>
 <style>
 /* Dashboard-specific styles */
 .banq-dash-section {
@@ -456,7 +457,12 @@
       var banner = document.getElementById('banqQapBanner');
       var bannerText = document.getElementById('banqQapBannerText');
       if (banner) banner.style.display = 'block';
-      if (bannerText) bannerText.textContent = 'QAP: ' + qap + ' -- Package: ' + pkg + '. Sign in to launch your ad campaign.';
+      // The pkg param is a CATALOG KEY, not a display name. Resolve it through
+      // the catalog so a deep link can never print a raw key (or an old tier
+      // name like 'starter') back to the customer.
+      var entry = (window.BANQ_AD_CATALOG && window.BANQ_AD_CATALOG.get(pkg)) || null;
+      var pkgLabel = entry ? entry.label : pkg;
+      if (bannerText) bannerText.textContent = 'QAP: ' + qap + ' -- Package: ' + pkgLabel + '. Sign in to launch your ad campaign.';
     }
 
     if (!BANQ.signedIn()) {

@@ -62,6 +62,38 @@ INVENTORY -- LAST UPDATED: 2026-08-26
    auto-detected from window.location.origin + '/api'. 401 -> clear token,
    redirect to /login.html.
 
+5. js/ad-catalog.js
+   THE ADVERTISING CATALOG (BANQ-021). Single source of truth for the whole
+   marketplace: the six packages (banner, video, network_banner, network_video,
+   launch, full_reach), their prices, click budgets, bullet lists, button states
+   and the BANQ AD SERVICE subscription. Also owns QAP format validation and the
+   package-vs-profile media requirement check. Exposes window.BANQ_AD_CATALOG.
+   No surface holds its own package copy -- see docs/BANQ-021-IMPLEMENTATION-
+   DESIGN.md Section 2 for why (two hand-written card sets drifted apart).
+
+6. js/ad-page.js
+   THE TWO RENDERERS (BANQ-021). mountPage() writes the FULL marketplace into
+   packages.html; mountPopup() writes the PARTIAL preview into the index.html
+   AD-Packages popup (two bullets per row, per Section 23.8). Both read
+   js/ad-catalog.js, so a preview and a page cannot describe different products.
+   Also owns the launch-button notice behaviour ("SERVICE IS DELAYED FOR
+   TECHNICAL REVIEW" / "AD PACKAGE WILL BE ANNOUNCE SOON"). Exposes
+   window.BANQ_AD_PAGE.
+
+==============================================================================
+SCRIPTS (scripts/)
+==============================================================================
+
+7. scripts/verify-unified-ad-page.cjs
+   BANQ-021 verifier. 18 checks including the DRIFT ALARM: the catalog's billing
+   key set must equal the PACKAGE_TIERS key set in qwkbrowser/backend/routes/
+   ads.js, so a package can never be advertised without a billing key behind it.
+   Also proves no day-durations and no old tier names survive on any surface.
+
+8. scripts/verify-v1-unified-ad-page.ps1
+   PowerShell wrapper for #7 (ecosystem convention verify-v{n}-{feature}.ps1).
+   Propagates the checker's exit code so it can gate a build.
+
 ==============================================================================
 END OF JAVASCRIPT FILE INVENTORY
 ==============================================================================

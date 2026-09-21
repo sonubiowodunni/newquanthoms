@@ -56,8 +56,16 @@ Each item has:
 - **Notes:** BANQ owns its own auth. backend/auth.js (login, me, logout, requireAuth middleware). backend/db.js (users + sessions tables, banqadmin seeding). Token-based using UUIDv4, SHA-256 hashed, 7-day sessions. banq_token in localStorage (NOT qwk_token). Completely separate from QwkBrowser. Committed as 98b498c.
 
 ### BANQ-007: Seed Banner Script
-- **Status:** DONE (script created, needs running)
-- **Spec:** `backend/seed-banners.js`
+- **Status:** CORRECTED 2026-09-21 -- EXISTS IN THE WRONG REPO, deliberately not
+  copied. The script is real and matches this description exactly, but it lives
+  at `qwkbrowser/backend/seed-banners.js` (where the `ad_banners` table is)
+  -- not at a BANQ-local `backend/seed-banners.js`, which is the path this row
+  used to claim and which has never existed.
+- **Decision:** DEFER. Seeding QWK's table from BANQ would cross the ownership
+  boundary the API-partnership design keeps clean, so the seed is a QWK-side
+  step and BANQ reads the result through `/api/ads/*`. This row is no longer a
+  BANQ task; it is a QWK task that BANQ depends on for demo data.
+- **Spec:** `qwkbrowser/backend/seed-banners.js`
 - **Dependencies:** BANQ-001
 - **Notes:** 8 placeholder banner rows with [DEMO] prefix. Idempotent. Script needs to be run: `node backend/seed-banners.js`. Without running, feed shows mock banners from frontend JS.
 
@@ -148,8 +156,9 @@ Each item has:
 - **Notes:** PowerShell verification scripts in scripts/ following naming convention: verify-v{number}-{feature}.ps1. Start with smoke test: verify-v1-smoke.ps1 (all pages load, auth works, proxy reaches QWK).
 
 ### BANQ-021: Unified Advertising Page Structure
-- **Status:** PLANNED
-- **Spec:** `docs/BANQ-AD-MONITORING-PARTNERSHIP.md` Section 23
+- **Status:** DONE (BANQ standalone half, 2026-09-21) -- built and verified 18 PASS / 0 FAIL; the qwkbrowser half (quanthomnetwork.html + newquanthoms.html popup) remains its own item
+- **Spec:** `docs/BANQ-021-IMPLEMENTATION-DESIGN.md` (authoritative) + `docs/BANQ-AD-MONITORING-PARTNERSHIP.md` Section 23
+- **Stale warning:** `docs/UNIFIED-AD-PAGE-RESTRUCTURE-TASK.md` (2026-08-29) predates the 2026-09-03 decisions. Its package prices, day durations and QAP-box placement are superseded -- see the design doc Section 1.
 - **Dependencies:** BANQ-001, BANQ-004
 - **Notes:** Unify all ad placements and packages into one advertising page. Two ways to buy: (1) Build Your Own (Banner, Video, Network Banner, Network Video) and (2) Campaign Packages (Launch, Full Reach). Remove old tier names (Starter/Premium/Sponsored). Popup on newquanthoms.html + BANQ index.html shows partial preview; quanthomnetwork.html shows full details. BANQ Campaign Management opt-in at bottom. Publisher application form on quanthomnetwork.html stays as-is.
 
@@ -165,7 +174,7 @@ Each item has:
 | BANQ-004 | AD-Packages Popup | DONE | Inline |
 | BANQ-005 | Dashboard QAP Integration | DONE | Inline |
 | BANQ-006 | Independent Auth System | DONE | backend/auth.js + db.js |
-| BANQ-007 | Seed Banner Script | DONE (needs running) | backend/seed-banners.js |
+| BANQ-007 | Seed Banner Script | EXISTS IN QWK REPO, NOT RUN (BANQ copy intentionally not created) | qwkbrowser/backend/seed-banners.js |
 | BANQ-008 | Doc Rebranding | IN-PROGRESS | All docs in docs/ |
 | BANQ-009 | Billboard Declaration Backend | DEFERRED | NEEDED BACKEND Section 1 |
 | BANQ-010 | Contact Form Backend | DEFERRED | NEEDED BACKEND Section 2 |
@@ -179,7 +188,7 @@ Each item has:
 | BANQ-018 | Click History | PLANNED | NEEDED |
 | BANQ-019 | Feature Flag System | PLANNED | NEEDED |
 | BANQ-020 | Verification Scripts | PLANNED | NEEDED |
-| BANQ-021 | Unified Advertising Page Structure | PLANNED | docs/BANQ-AD-MONITORING-PARTNERSHIP.md Section 23 |
+| BANQ-021 | Unified Advertising Page Structure | DONE (BANQ half) | docs/BANQ-021-IMPLEMENTATION-DESIGN.md |
 
 ---
 
