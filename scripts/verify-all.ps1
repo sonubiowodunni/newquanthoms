@@ -23,6 +23,7 @@ $suites = @(
   @{ name = 'smoke (site + API shape)'; file = 'verify-v1-smoke.cjs' },
   @{ name = 'unified ad page (BANQ-021)'; file = 'verify-unified-ad-page.cjs' },
   @{ name = 'identity bridge (BANQ-024)'; file = 'verify-banq-identity-bridge.cjs' },
+  @{ name = 'partner reward door (F3)'; file = 'verify-banq-partner-reward.cjs' },
   @{ name = 'intelligence system (E0-E4)'; file = 'verify-banq-intelligence.cjs' }
 )
 

@@ -21,6 +21,7 @@ const { router: authRouter } = require('./backend/auth');
 const { router: banqRouter } = require('./backend/banq');
 const { router: billboardRouter } = require('./backend/billboards');
 const { router: intelligenceRouter } = require('./backend/banq-intelligence');
+const { router: earnRouter } = require('./backend/earn');
 const schema = require('./backend/intelligence/schema');
 const flags = require('./backend/flags');
 
@@ -101,6 +102,14 @@ app.use('/api/banq', intelligenceRouter);
 // -- Billboards (C2). Declarations give the demand table real data instead of
 // placeholder rows. Mounted at /api/billboards.
 app.use('/api/billboards', billboardRouter);
+
+/* -- Earning (QWK-PARTNER-REWARD). The reward half of the SAME bridge that
+ * carries sign-in: the browser asks us, we ask QwkBrowser's secret-guarded
+ * partner door server-side, and we report the answer as it came. The page
+ * cannot call QwkBrowser directly -- it has no QWK token and cannot hold the
+ * qwk_csrf cookie -- which is exactly why the old "Click to Earn" button
+ * could never pay. Mounted at /api/earn, local and never proxied. */
+app.use('/api/earn', earnRouter);
 
 /* -- Unknown /api/* is 404 JSON, never the homepage --
  *

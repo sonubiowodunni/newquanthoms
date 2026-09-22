@@ -178,6 +178,10 @@
     var grid = document.getElementById('banqFeedGrid');
     if (!grid) return;
     filter = filter || 'all';
+    // Remembered so the earn-status answer (which can arrive after the first
+    // paint) can re-render the same cards with the honest button state.
+    LAST_FILTER = filter;
+    LAST_BANNERS = banners || [];
 
     if (!banners || !banners.length) {
       banners = MOCK_BANNERS;
@@ -203,13 +207,20 @@
       } else {
         mediaHtml = '<div class="banq-placeholder-bg" style="background:' + grad + '">' + esc(b.advertiser || 'BANQ') + '</div>';
       }
+      // The button never invites a click it cannot pay. Before the status
+      // check answers, it degrades to the old label; once the status is known
+      // and earning is shut (no QWK link, or the reward door closed), it says
+      // WHY instead of promising a reward and failing on the click.
+      var earnMsg = (EARN.loaded && !EARN.can_earn && EARN.message) ? EARN.message : null;
       var btnHtml;
       if (isMock) {
         btnHtml = '<button class="banq-earn-btn" disabled>Coming Soon</button>';
-      } else if (BANQ.signedIn()) {
-        btnHtml = '<button class="banq-earn-btn" data-banner-id="' + esc(b.id) + '" data-type="' + esc(b.type || 'image') + '">Click to Earn</button>';
-      } else {
+      } else if (!BANQ.signedIn()) {
         btnHtml = '<a href="login.html" class="banq-earn-btn" style="text-decoration:none;display:inline-block">Sign In to Earn</a>';
+      } else if (earnMsg) {
+        btnHtml = '<button class="banq-earn-btn" disabled title="' + esc(earnMsg) + '">' + esc(earnMsg) + '</button>';
+      } else {
+        btnHtml = '<button class="banq-earn-btn" data-banner-id="' + esc(b.id) + '" data-type="' + esc(b.type || 'image') + '">Click to Earn</button>';
       }
       var targetHtml = (b.target_url && b.target_url !== '#')
         ? '<span class="banq-cooldown">' + esc(b.target_url) + '</span>'
@@ -234,74 +245,118 @@
     // Wire up click-to-earn buttons (Rule 29)
     var earnBtns = grid.querySelectorAll('.banq-earn-btn[data-banner-id]');
     earnBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var bannerId = this.getAttribute('data-banner-id');
-        var bannerType = this.getAttribute('data-type');
-        handleEarnClick(this, bannerId, bannerType);
+      btn.addEventListener('click', function() {                var bannerId = this.getAttribute('data-banner-id');
+
+        handleEarnClick(this, bannerId);
       });
     });
   }
 
-  function handleEarnClick(btn, bannerId, bannerType) {
+  function handleEarnClick(btn, bannerId) {
     if (!BANQ.signedIn()) {
       window.location.href = 'login.html';
       return;
     }
+    if (EARN.loaded && !EARN.can_earn) {
+      BANQ.toast(EARN.message || 'Earning is not open yet.', 'info');
+      return;
+    }
     btn.disabled = true;
     btn.textContent = 'Processing...';
-    var endpoint = bannerType === 'video' ? '/ads/impression' : '/ads/click';
-    // qwkFetch, NOT fetchJson: a QwkBrowser 401 must never sign this person
-    // out of BANQ (see js/app.js).
-    BANQ.qwkFetch(endpoint, {
+    // fetchJson, NOT qwkFetch: /earn/click is BANQ's own endpoint, called with
+    // the BANQ session. A 401 here really does mean "signed out", unlike a
+    // QwkBrowser 401 (see js/app.js). The QwkBrowser call happens server-side,
+    // with a secret the browser never holds -- which is why this can pay at
+    // all, and why the previous direct-to-QwkBrowser click never could.
+    BANQ.fetchJson('/earn/click', {
       method: 'POST',
       body: JSON.stringify({ banner_id: parseInt(bannerId) })
     }).then(function(data) {
-      if (data.error) {
+      if (!data || !data.ok) {
         btn.disabled = false;
         btn.textContent = 'Click to Earn';
-        BANQ.toast(data.error, 'error');
+        BANQ.toast((data && data.reason) || 'Failed to earn.', 'error');
         return;
       }
-      btn.textContent = 'Earned!';
+      btn.textContent = data.replay ? 'Already earned' : 'Earned!';
       btn.style.opacity = '0.45';
-      BANQ.toast('+' + (data.units_awarded || data.credits_awarded || 0) + ' earned!', 'success');
+      if (data.reward_hidden) {
+        // Reward economics are switched off centrally: the click counted,
+        // nothing was paid, and we do not print "+0".
+        BANQ.toast('Click recorded. Rewards are paused right now.', 'info');
+      } else if (data.replay) {
+        // Already granted today: saying "+10 earned!" again would claim a
+        // payment that did not happen the second time.
+        BANQ.toast('You already earned ' + (data.units_earned || 0) + ' QU on this campaign today.', 'info');
+      } else {
+        BANQ.toast('+' + (data.units_earned || 0) + ' QU earned!', 'success');
+      }
       loadBalance();
       loadBonusProgress();
     }).catch(function(err) {
       btn.disabled = false;
       btn.textContent = 'Click to Earn';
-      if (err && err.status === 429) {
-        BANQ.toast('Cooling down -- wait a few seconds.', 'error');
-      } else if (err && err.status === 400 && ((err.message || '') + (err.error || '')).indexOf('cooldown') >= 0) {
+      var reason = (err && (err.reason || err.error)) || '';
+      if (reason === 'cooldown_active' || (err && err.status === 409)) {
         btn.textContent = 'Come back later';
         btn.style.opacity = '0.45';
-        BANQ.toast('Banner on cooldown.', 'info');
-      } else if (err && (err.status === 401 || (err.status === 403 && err.code === 'CSRF_MISSING'))) {
-        // The truth, not "try again": retrying cannot help, because the
-        // QwkBrowser reward bridge is not open to a BANQ session yet. Saying
-        // "try again" would keep people clicking a button that cannot pay.
+        BANQ.toast('You already earned on this banner today.', 'info');
+      } else if (reason === 'rate_limited' || (err && err.status === 429)) {
+        BANQ.toast('Too fast -- wait a moment and try again.', 'error');
+      } else if (reason === 'self_reward') {
+        BANQ.toast('You cannot earn from your own campaign.', 'error');
+      } else if (reason === 'qwk_not_linked') {
+        btn.textContent = 'Link your account';
+        BANQ.toast('Earning needs a linked QwkBrowser account. Sign in with QwkBrowser.', 'info');
+      } else if (reason === 'bridge_not_configured' || reason === 'reward_door_closed') {
+        // The truth, not "try again": the reward bridge is not open. Retrying
+        // cannot help, and inviting the click again would be a promise the
+        // system cannot keep.
         btn.textContent = 'Earning not live yet';
         btn.style.opacity = '0.45';
-        BANQ.toast(err.reason || 'Reward earning is not open yet.', 'info');
+        BANQ.toast('Reward earning is not switched on yet.', 'info');
       } else {
-        BANQ.toast((err && err.reason) || 'Failed to earn. Try again.', 'error');
+        BANQ.toast('Could not reach the reward service. Try later.', 'error');
       }
     });
   }
 
+  // Earning state, fetched once per page load. Until it answers, the button
+  // keeps the old label; after it answers, a shut door says why.
+  var EARN = { loaded: false, can_earn: false, message: null };
+  var LAST_BANNERS = [];
+  var LAST_FILTER = 'all';
+
+  function loadEarnStatus() {
+    if (!BANQ.signedIn()) return Promise.resolve();
+    return BANQ.fetchJson('/earn/status').then(function(data) {
+      var s = (data && data.status) || {};
+      EARN.loaded = true;
+      EARN.can_earn = !!s.can_earn;
+      EARN.message = s.can_earn ? null
+        : (!s.linked ? 'Link a QwkBrowser account'
+        : (!s.bridge_configured ? 'Earning not live yet' : 'Earning not live yet'));
+      return EARN;
+    }).catch(function() { return EARN; });
+  }
+
+  // The bonus bar reads BANQ's OWN earn history, not QwkBrowser's
+  // /api/ads/clicks/history: that endpoint needs a QWK token this site cannot
+  // hold, so the bar would have stayed at 0/20 forever while looking healthy.
   function loadBonusProgress() {
     if (!BANQ.signedIn()) return;
     var bar = document.getElementById('banqProgressBar');
     var text = document.getElementById('banqProgressText');
     if (!bar || !text) return;
-    BANQ.qwkFetch('/ads/clicks/history').then(function(data) {
-      var history = (data.history || []).filter(function(h) {
-        return h.clicked_at && isToday(h.clicked_at);
+    BANQ.fetchJson('/earn/history').then(function(data) {
+      var granted = (data.history || []).filter(function(h) {
+        return h.status === 'granted' && h.created_at && isToday(h.created_at);
       });
-      var uniqueClicks = new Set(history.map(function(h) { return h.banner_id; })).size;
+      var uniqueClicks = new Set(granted.map(function(h) { return h.banner_id; })).size;
       var pct = Math.min(100, (uniqueClicks / 20) * 100);
       bar.style.width = pct + '%';
-      text.textContent = uniqueClicks + '/20 unique clicks today';
+      text.textContent = uniqueClicks + '/20 unique clicks today' +
+        (data.earned_today ? ' -- ' + data.earned_today + ' QU' : '');
     }).catch(function() {});
   }
 
@@ -320,6 +375,12 @@
     BANQ.checkAuth().then(function(user) {
       if (user) renderUserArea();
       loadBonusProgress();
+      // Ask whether earning is open BEFORE the cards are drawn, so the button
+      // never offers a click that cannot be paid. Re-renders once if the
+      // answer arrives after the first paint.
+      loadEarnStatus().then(function() {
+        if (LAST_BANNERS.length) renderFeed(LAST_BANNERS, LAST_FILTER);
+      });
     });
 
     // Fetch public banners (no auth needed -- GET /api/ads/public)
