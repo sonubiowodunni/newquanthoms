@@ -35,12 +35,12 @@
   <div class="banq-auth-page">
     <div class="banq-auth-card">
       <div class="banq-auth-title">Sign In to Earn Rewards</div>
-      <div class="banq-auth-sub">Sign in with your BANQ account to earn QU and QC by engaging with billboard content.</div>
-      <input class="banq-auth-input" id="banqLoginUser" placeholder="Username" autocomplete="username" />
+      <div class="banq-auth-sub">Sign in with your QwkBrowser account -- the same username and password you use on QwkBrowser -- to earn QU and QC by engaging with billboard content.</div>
+      <input class="banq-auth-input" id="banqLoginUser" placeholder="QwkBrowser username" autocomplete="username" />
       <input class="banq-auth-input" id="banqLoginPass" type="password" placeholder="Password" autocomplete="current-password" />
       <button class="banq-auth-btn" id="banqLoginBtn">Sign In</button>
       <div class="banq-auth-error" id="banqLoginError"></div>
-      <div class="banq-auth-note">Don't have an account? <a href="about.html">Contact BANQ</a></div>
+      <div class="banq-auth-note">Your password is checked by QwkBrowser, not stored here. No QwkBrowser account yet? <a href="about.html">Contact BANQ</a></div>
     </div>
   </div>
 </div>
@@ -82,11 +82,46 @@
         btn.textContent = 'Sign In';
       }
     }).catch(function(err) {
-      var msg = (err && err.message) ? err.message : 'Login failed. Check your credentials.';
+      // The server distinguishes "your password is wrong" from "the identity
+      // service is down". Pass its sentence through instead of flattening every
+      // failure into "check your credentials", which would blame the person for
+      // an outage.
+      var msg = (err && err.error) ? err.error : ((err && err.message) ? err.message : 'Login failed. Check your credentials.');
       showError(msg);
       btn.disabled = false;
       btn.textContent = 'Sign In';
     });
+  }
+
+  // -- Signed handoff from QwkBrowser (?sso=<token>) --
+  // qwkbrowser can hand a signed token to this page. Redeeming it creates the
+  // BANQ session without the person retyping anything. The token is single-use
+  // in practice (5-minute freshness window), so it is stripped from the URL on
+  // the way through -- leaving a used credential in the address bar to be
+  // bookmarked or pasted into a chat is how a token outlives its purpose.
+  function redeemHandoff() {
+    var params = new URLSearchParams(window.location.search);
+    var handoff = params.get('sso');
+    if (!handoff) return false;
+
+    var redirect = params.get('redirect') || '/';
+    var btn = document.getElementById('banqLoginBtn');
+    if (btn) { btn.disabled = true; btn.textContent = 'Signing in...'; }
+
+    BANQ.sso(handoff).then(function(data) {
+      BANQ.setToken(data.token);
+      if (data.user) BANQ.setUser(data.user);
+      window.location.href = redirect;
+    }).catch(function(err) {
+      var msg = (err && err.error) ? err.error : 'That QwkBrowser sign-in link is no longer valid. Sign in below.';
+      showError(msg + ' (reason: ' + ((err && err.reason) || 'unknown') + ')');
+      if (btn) { btn.disabled = false; btn.textContent = 'Sign In'; }
+      // Drop the dead token so a reload does not replay it.
+      params.delete('sso');
+      var qs = params.toString();
+      window.history.replaceState({}, '', window.location.pathname + (qs ? '?' + qs : ''));
+    });
+    return true;
   }
 
   // Wire button (Rule 29)
@@ -99,8 +134,12 @@
     if (e.key === 'Enter') handleLogin();
   });
 
+  // A handoff token wins over an existing session: it may be a DIFFERENT
+  // account than the one currently stored.
+  var redeeming = redeemHandoff();
+
   // If already signed in, redirect
-  if (BANQ.signedIn()) {
+  if (!redeeming && BANQ.signedIn()) {
     var params = new URLSearchParams(window.location.search);
     var redirect = params.get('redirect') || '/';
     window.location.href = redirect;

@@ -66,8 +66,57 @@
     });
   };
 
+  /* -- Calls that leave BANQ for QwkBrowser (proxied /ads/*, /profile/*) --
+   *
+   * WHY THIS IS NOT fetchJson: fetchJson treats a 401 as "the BANQ session is
+   * over" -- it clears banq_token and redirects to the login page. That is
+   * right for a BANQ route and WRONG for a QwkBrowser one, because those two
+   * 401s mean completely different things:
+   *
+   *   BANQ  401 -> this person's BANQ session expired. Sign them out.
+   *   QWK   401 -> QwkBrowser does not accept a BANQ token. The BANQ session
+   *                is perfectly valid; the partner reward bridge simply is not
+   *                open yet.
+   *
+   * With qwkFetch aliased to fetchJson, clicking a banner signed the person
+   * OUT: the QWK 401 wiped their session and bounced them to login.html. From
+   * the outside that looks exactly like "the login doesn't work" -- you sign
+   * in, touch anything, and you are back at the sign-in page.
+   *
+   * So: never clear the session here. Surface the real reason instead.
+   */
   BANQ.qwkFetch = function(path, options) {
-    return BANQ.fetchJson(path, options);
+    options = options || {};
+    var headers = { 'Content-Type': 'application/json' };
+    var token = BANQ.getToken();
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    options.headers = Object.assign({}, headers, options.headers || {});
+    return fetch(BANQ.API_BASE + path, options).then(function(res) {
+      return res.json().catch(function() { return {}; }).then(function(data) {
+        if (!res.ok) {
+          throw Object.assign({ status: res.status }, data, {
+            // One plain sentence for the UI, derived from what actually
+            // happened rather than a generic "something went wrong".
+            reason: BANQ.qwkReason(res.status, data)
+          });
+        }
+        return data;
+      });
+    });
+  };
+
+  /* Translate a QwkBrowser answer into something a person can act on. */
+  BANQ.qwkReason = function(status, data) {
+    var code = (data && data.code) || '';
+    if (status === 401) return 'Reward earning is not open yet: QwkBrowser does not accept a BANQ sign-in for it.';
+    if (status === 403 && code === 'CSRF_MISSING') {
+      return 'QwkBrowser blocked this as a cross-site request. The partner reward path is not enabled yet.';
+    }
+    if (status === 402) return 'This needs a paid QwkBrowser plan.';
+    if (status === 429) return 'Too many clicks. Wait a few seconds.';
+    if (status === 502 || status === 503) return 'QwkBrowser is not answering right now.';
+    if (data && data.error) return data.error;
+    return 'QwkBrowser answered ' + status + '.';
   };
 
   // -- Auth --
@@ -76,6 +125,24 @@
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username: username, password: password })
+    }).then(function(res) {
+      return res.json().then(function(data) {
+        if (!res.ok) throw Object.assign({ status: res.status }, data);
+        return data;
+      });
+    });
+  };
+
+  // -- Signed handoff from QwkBrowser --
+  // Redeems a handoff token issued by qwkbrowser (POST /api/auth/sso/handoff).
+  // The signature is verified by BANQ's own server with the shared secret, so
+  // this path needs no live call back to QwkBrowser. Returns the same shape as
+  // BANQ.login: { success, token, user }.
+  BANQ.sso = function(handoffToken) {
+    return fetch(BANQ.API_BASE + '/auth/sso', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: handoffToken })
     }).then(function(res) {
       return res.json().then(function(data) {
         if (!res.ok) throw Object.assign({ status: res.status }, data);

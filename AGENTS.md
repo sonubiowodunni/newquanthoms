@@ -119,11 +119,21 @@ list, search the web for competitive edges and brand it.
 ## Invocation rule (RTS / RTSG)
 
 When the founder says "follow RTS" or "follow RTSG":
+0. Run the DOCUMENT DISSECTION first (Rule 73, the section below):
+   resolve the repo, resolve the ticket id, classify the document, and
+   check it against the disk. Step 0 exists because a document can be
+   complete, correct and pointed at the wrong repo or the wrong id.
+   Do not act on a document before this step.
 1. Read this section.
 2. Trace the current task against the edge classes above.
 3. Suggest ONE highlight and log it to AGENTIC-REGISTRY-HIGHLIGHTS.md
    using the fixed 10-line format, naming the working folder it came
    from. No origin, no entry.
+4. Record every MANDATED FOUNDER ACTION (Rule 74) found in this pass in
+   qwkbrowser/docs/FOUNDERS-ACTIONS.md: the exact ask, why it cannot be done
+   without the founder, the options with a recommendation, and what stays
+   blocked. Then continue with everything that is NOT blocked. A blocker that
+   is not written down is a blocker that was worked around.
 
 ## Related files
 
@@ -251,11 +261,21 @@ list, search the web for competitive edges and brand it.
 ## Invocation rule (RTS / RTSG)
 
 When the founder says "follow RTS" or "follow RTSG":
+0. Run the DOCUMENT DISSECTION first (Rule 73, the section below):
+   resolve the repo, resolve the ticket id, classify the document, and
+   check it against the disk. Step 0 exists because a document can be
+   complete, correct and pointed at the wrong repo or the wrong id.
+   Do not act on a document before this step.
 1. Read this section.
 2. Trace the current task against the edge classes above.
 3. Suggest ONE highlight and log it to AGENTIC-REGISTRY-HIGHLIGHTS.md
    using the fixed 10-line format, naming the working folder it came
    from. No origin, no entry.
+4. Record every MANDATED FOUNDER ACTION (Rule 74) found in this pass in
+   qwkbrowser/docs/FOUNDERS-ACTIONS.md: the exact ask, why it cannot be done
+   without the founder, the options with a recommendation, and what stays
+   blocked. Then continue with everything that is NOT blocked. A blocker that
+   is not written down is a blocker that was worked around.
 
 ## Related files
 
@@ -276,6 +296,359 @@ When the founder says "follow RTS" or "follow RTSG":
 - ARGUMENTS SECTION RULES (QWK-055)
 - DIAGNOSIS SECTION RULES (QWK-055)
 - SOURCE MODEL (QWK-055)
+
+---
+
+
+---
+
+<!-- BEGIN DOCUMENT-DISSECTION-RULE (Rule 73) -->
+
+# DOCUMENT DISSECTION AND REPO RESOLUTION (Rule 73)
+
+## This rule has no wing prefix, on purpose
+
+Every other id in this ecosystem carries a wing prefix: QWK- for
+qwkbrowser, REG- for the Registry, QM- for Quanthom Mails, BANQ- for
+www.newquanthoms.com. This rule deliberately does NOT.
+
+It is a GLOBAL rule. It is mirrored into every wing, so any wing prefix
+on it would be wrong in every wing but one. It was first written as
+"Rule 73" and that was a defect of exactly the kind this rule exists to
+prevent: a qwkbrowser id sitting in the Registry, in Mails, in Chat and
+in BANQ. It also collided in meaning, because Rule 64 already exists and
+means AGENTS.md is mirrored at docs/MASTER-AGENTS.md.
+
+So it is cited as Rule 73, wing-neutral, the same way the other global
+rules are cited (Rule 16 ASCII-only, Rule 57 machine-readable verify).
+Do not re-prefix it. If you are tempted to write QWK-073, that is the
+bug, not a tidy-up.
+
+## Why this rule exists
+
+Two failures happened on 2026-09-22 and neither was a coding mistake.
+Both were resolved before a single line was written, and both were caught
+only by luck:
+
+1. TWO WINGS NUMBERED THE SAME TICKET ID. The Registry wing allocated its
+   own roadmap from the same QWK-NNN sequence qwkbrowser was already
+   using. "Do QWK-057" meant three different features in three different
+   repos at once: New Conversations Format, Quanthom Mails, and the
+   Registry access model. Any agent that acted on the number without
+   resolving it would have built the right thing in the wrong repo, or
+   the wrong thing in the right one.
+
+2. A COMPLETE SPEC WAS NEVER BUILT. docs/BMF-TRANSITION-MAP-AI-SYSTEM.md
+   was 398 lines of finished product design. No pipeline row referenced
+   it, so no ticket existed, so nothing was scheduled, so nobody built
+   it. The document was correct, complete and completely invisible.
+
+Both failures have one cause: a document was read and acted on without
+first asking WHICH REPO, WHICH ID, and WHICH STATUS.
+
+## The invocation
+
+When the founder says "follow RTS" or "follow RTSG", the agent does the
+RTS work AND runs this dissection on every document the task touches. The
+dissection is not optional. It runs FIRST, before the first edit and
+before the first ticket is cited.
+
+## Step 1 -- Resolve the repo
+
+Ask one question: which repo owns the code this task changes?
+
+- Never assume the current working directory is the right repo. The
+  working directory is where the session opened, not a decision.
+- A ticket id appearing in a repo does not mean that repo owns it. The
+  Registry repo cites qwkbrowser tickets constantly; that makes it a
+  reader, not an owner.
+- Repo names are not proof either. quanthom-mails is email; it is not the
+  chat wing, and it is not the Registry.
+- If two repos could both be correct, the subject of the ticket decides,
+  not the convenience of the session.
+- Record the resolved repo and the reason in the Origin line of the
+  highlight, so the next agent can check the reasoning instead of
+  repeating it.
+
+## Step 2 -- Resolve the ticket id (prefix discipline)
+
+- An id without a prefix is not an id. Never act on a bare "057".
+- ONE PREFIX, ONE WING. The prefix is what makes a number unambiguous:
+  QWK-NNN is qwkbrowser. REG-NNN is quanthom-registry. QM-NNN is
+  quanthom-mails. BANQ-NNN is www.newquanthoms.com.
+- ONE GLOBAL SEQUENCE PER PREFIX. A number is never reused, never
+  re-issued to a second feature, and never allocated by a wing out of
+  another wing's prefix.
+- A wing that needs a new ticket takes the next free number in ITS OWN
+  prefix. It never takes the next number in a neighbour's prefix, however
+  tidy that looks.
+- A number whose feature is finished is marked RELEASED. A released
+  number is not handed to a new feature without saying so; silent reuse
+  is what broke the audit trail in the first place.
+- Before acting, verify. Run scripts/audit-ticket-ids.cjs -- it reads
+  ticket claims across every wing and reports any id claimed by two
+  different features. Zero collisions is the required state. If the
+  count is not zero, fix the ids before doing the task, not after.
+
+## Step 3 -- Dissect the document before trusting it
+
+Classify every document you are about to act on. The class decides what
+you are allowed to do with it.
+
+| Class | Looks like | You may |
+|---|---|---|
+| SPEC | a build-ready design with schema and exit criteria | build it |
+| ROADMAP | "and beyond", a phase list, no schema | plan it; do not build from it |
+| SPEC-READY, not built | spec on disk, zero code on disk | build it, after confirming zero code |
+| BUILT | status says built | verify it; do not rebuild it |
+| ARCHIVE | lives in _archive or is marked historical | read it for reference; never execute it |
+| HISTORICAL / RELEASED | its id was released | never cite the old id for new work |
+| SUPERSEDED | a newer document names it as replaced | read the newer one instead |
+
+Rules that follow from the table:
+
+- A roadmap entry is not a spec. A roadmap line has no schema, no exit
+  criteria and no verify plan, so building one as if it were a design
+  produces unverifiable work. Roadmap items become buildable only when a
+  spec exists.
+- An archived document is not pending work. It records something
+  finished. Executing it re-does completed work and can undo it.
+- When two documents describe the same scope, exactly one is
+  authoritative and the other references it. Never enumerate the same
+  work or restate the same count in two places. A second independent
+  count is a defect, not a second opinion.
+- If a document claims a file exists, the claim must carry a path, and
+  the path must resolve on disk. A claimed path that does not resolve is
+  a phantom; correct the document before building anything from it.
+
+## Step 4 -- Check freshness against the disk
+
+A status line is a claim, not a fact. Before trusting DONE, BUILT or
+SHIPPED:
+
+- Does the file the document names actually exist?
+- Does the endpoint it names appear in the router?
+- Does the table it names appear in the schema?
+- Does the page it names appear in the served HTML?
+
+If the document and the disk disagree, the disk wins, and the document is
+corrected in the same pass. A stale document is worse than a missing one,
+because a missing document sends nobody anywhere while a stale document
+sends the next agent confidently to the wrong place.
+
+## Step 5 -- State the dissection before working
+
+Before the first edit, state in one short block:
+
+- REPO: which repo, and why it is the right one.
+- TICKET: prefix and id, and what that id means in that repo.
+- DOCUMENT: which document is authoritative for this work.
+- STATUS: what is already built, read from the disk.
+- REMAINING: what this task will actually change.
+
+If any line cannot be answered with evidence, STOP and ask the founder.
+A wrong repo and a wrong id are the two cheapest mistakes to prevent and
+the two most expensive to undo, because both are invisible while they are
+being made.
+
+## The archive rule
+
+A repo, wing or document whose work is complete with nothing left must be
+archived. Archiving is not deleting. An archived thing is labelled and
+moved, and it records, in this order:
+
+1. ARCHIVED, with the date.
+2. What it was, in one sentence.
+3. Why it is safe to archive: what remains, which must be nothing.
+4. Where its live work went, if anywhere -- the successor repo or doc.
+5. The ids it held, marked RELEASED, so it is visible that those numbers
+   are free rather than silently reusable.
+
+A finished repo left looking active is a hazard, not a harmless
+leftover: the next agent reads it as work in progress and does the wrong
+task in the wrong place. Archiving is part of finishing, not an
+afterthought to it.
+
+## The machine check
+
+- scripts/audit-ticket-ids.cjs -- one command, every wing. It reads
+  ticket claims from claim position (a table cell, a heading, the start
+  of a line) and reports any id claimed by two different features. Run it
+  before a task that adds or renames a ticket, before archiving anything,
+  and after any renumbering.
+- scripts/fix-ticket-id-collisions.cjs -- dry-run FIRST, always. It
+  prints every proposed change with its file and line. Apply only after
+  reading them, because a mixed document can reference a neighbour wing's
+  ticket and a blind replace would corrupt a real cross-reference.
+
+## Failure modes this rule prevents
+
+| Failure | How it happens | Step that stops it |
+|---|---|---|
+| Wrong repo | the feature exists in two wings | Step 1 |
+| Wrong ticket | a bare number, or a number claimed twice | Step 2 |
+| Wrong task | a roadmap line built as a spec | Step 3 |
+| Rebuilding finished work | a stale DONE claim read as pending | Step 4 |
+| Invisible spec | no ticket points at the spec | Step 3 + Step 5 |
+| Stale repo read as active | a finished repo never archived | The archive rule |
+
+<!-- END DOCUMENT-DISSECTION-RULE (Rule 73) -->
+
+---
+
+<!-- BEGIN FOUNDERS-ACTIONS-RULE (Rule 74) -->
+
+# MANDATED FOUNDER ACTIONS (Rule 74)
+
+> **Canonical copy.** This file is the single source for the rule below. It is
+> mirrored into every agents file in the ecosystem by
+> `qwkbrowser/scripts/apply-founders-actions-rule.cjs`. Edit IT here, then run
+> the script -- never edit a mirror by hand, or the copies drift.
+>
+> **Rule number:** 74 (wing-neutral). It carries no wing prefix on purpose: a
+> mirror of a global rule must not wear one wing's id. The highest global rule
+> number in use before this one was 73; `Rule 64` already means "AGENTS.md is
+> mirrored at docs/MASTER-AGENTS.md". Do not "tidy" this into `QWK-074`.
+
+---
+
+## 1. WHY THIS RULE EXISTS
+
+An agent can build almost anything in this ecosystem on its own. A short list of
+things it cannot build, cannot invent, and must never fake:
+
+- **credentials and keys** it does not hold,
+- **money** decisions (what to charge, what to switch on, live vs test),
+- **legal and consent** text,
+- **irreversible operations** (commits, pushes, deletions, archiving a repo),
+- **trust-boundary changes** (who is allowed to authenticate as whom),
+- **product priority** (which of two good things to do first),
+- **documents and files** only the founder knows the location of.
+
+The failure this rule prevents is specific and it has already happened here. Work
+that needs one of those things gets **quietly worked around**: a flag stays off
+and nobody is told why, a stub is written and shipped as if it were the feature,
+a placeholder balance is rendered as though it were real, or a whole item is
+"finished" in the sense that the part requiring a decision was skipped. The
+blocker then lives only in an agent's reasoning, which is the one place nobody
+reads later.
+
+The whole point of this rule is that **a blocker is a deliverable**. If it cannot
+be done, it must be written down where the founder will see it, in a form
+somebody can act on in ten seconds.
+
+---
+
+## 2. WHAT QUALIFIES AS A MANDATED FOUNDER ACTION
+
+A task item qualifies when it falls into one of these classes:
+
+| # | Class | Examples |
+|---|---|---|
+| 1 | Credentials and secrets | API keys, storage buckets, SMTP, OAuth client secrets, a shared secret that must match in two places |
+| 2 | Money | enabling a paid flow, live vs test keys, prices, refunds, payouts |
+| 3 | Legal, consent and claims | terms, privacy, disclosure wording, anything that promises money |
+| 4 | Irreversible operations | commit, push, delete, archive a repo, destroy a database, revoke a token |
+| 5 | Trust boundary | who authenticates as whom, what a partner may do with a session, where a credential may be stored |
+| 6 | Product priority | choosing between two valid builds when only one should happen first |
+| 7 | Knowledge only the founder holds | the location of a document, an account owner, a business intent |
+
+If an item is class **1-7**, it is a founder action. If it is none of them, it is
+ordinary work: do it, do not queue it.
+
+---
+
+## 3. THE OBLIGATION (this is the part that is mandatory)
+
+**Whoever first identifies a mandated founder action must acquire it.** The
+initiator owns it. There is no "someone will notice".
+
+The initiator must, in this order:
+
+1. **Record it in the queue** -- `qwkbrowser/docs/FOUNDERS-ACTIONS.md` -- in the
+   fixed item format: what is needed, why it cannot be done without the founder,
+   the options with a recommendation, what stays blocked meanwhile, and who asked
+   and when.
+2. **State the exact ask, not the symptom.** "Object storage credentials (R2
+   bucket + access key + secret)" is an ask. "Media upload is broken" is not.
+3. **Name the work it blocks**, so the cost of leaving it unanswered is visible.
+4. **Keep going on everything else.** A queued item blocks its own item and
+   nothing more. It is never a reason to stop the session.
+5. **Mark it resolved** when the founder answers: who, when, what was decided,
+   and the evidence. A denial is a resolution, not a failure.
+
+**Never** guess a credential, invent a number, flip a paid switch on
+speculatively, commit a change the founder has not approved, choose a
+trust-boundary model because it is easier, or ship a stub that renders as though
+the real thing were there. If the honest state is "this button cannot pay yet",
+the button must say so and the queue must say why.
+
+---
+
+## 4. WHAT THE FOUNDER MAY DO
+
+All three outcomes are valid and all three get recorded:
+
+- **GRANT** -- supply the thing (key, decision, approval).
+- **DENY** -- refuse, with or without a reason. The queue records the refusal and
+  the item is closed forever; it must not be re-asked every session.
+- **DEFER** -- not now. The item stays open with the new date or condition
+  attached, and it stays visible as still-open rather than disappearing.
+
+An unanswered item is **OPEN**, never assumed. Silence is not consent, and a
+missing answer never becomes a default.
+
+---
+
+## 5. THE QUEUE'S OWN RULES
+
+- **One queue, ecosystem-wide**, grouped by wing. Not one per repo: a per-repo
+  queue is how an item gets forgotten in the repo nobody opened this week.
+- **Numbered, stable ids** (`FA-01`, `FA-02`, ...). An id is never reused, even
+  after resolution.
+- **Honest status values only:** `OPEN`, `GRANTED`, `DENIED`, `DEFERRED`.
+  No "probably fine".
+- **The summary table comes first** so the whole ask is visible in one screen.
+- **It is a queue, not a spec.** Detail belongs in the owning doc; the queue
+  names the doc and section.
+- If the queue is empty, say so explicitly. An empty queue is a real and useful
+  state; a missing queue is not.
+
+---
+
+## 6. WHEN THIS RULE RUNS
+
+- As **step 4 of RTS/RTSG**, alongside the highlight: any mandated founder action
+  found during a pass goes into the queue in the same pass.
+- At the **start of any session** touching a queued item: read the queue first,
+  so a decided item is not re-litigated and an open one is not forgotten.
+- Before declaring any work **done**: if the honest completion depends on a class
+  1-7 item, the work is `BLOCKED ON FA-nn`, not done.
+
+---
+
+## 7. FAILURE MODES THIS RULE STOPS
+
+| Failure | What it looks like | Which part of this rule stops it |
+|---|---|---|
+| Silent workaround | A flag left off, no reason written anywhere | 3.1 record it, 3.4 keep going but visibly blocked |
+| Fake completion | A stub or placeholder presented as the feature | 3.never-guess clause; blocked work is labelled blocked |
+| Credential invention | A guessed key, a hardcoded value | Class 1 is a founder action, never an assumption |
+| Re-asking forever | The same question every session | 4 -- GRANTED/DENIED are recorded and closed |
+| Blocker lives in chat | "I could not do X" said once in a transcript | The queue is a file, not a message |
+| Stopping everything | The session halts on one open question | 3.4 -- queue it and continue |
+| Wrong repo, wrong task | A document pointing at another wing | Rule 73 (document dissection) runs first |
+
+---
+
+## END OF RULE 74
+
+> Queue: `qwkbrowser/docs/FOUNDERS-ACTIONS.md`
+> Mirror script: `qwkbrowser/scripts/apply-founders-actions-rule.cjs`
+> Related: Rule 73 (document dissection), Rule 64 (agents mirror), Rule 57
+> (machine-readable verify), Rule 16 (commit checkpoints).
+
+<!-- END FOUNDERS-ACTIONS-RULE (Rule 74) -->
 
 ---
 
@@ -497,11 +870,21 @@ list, search the web for competitive edges and brand it.
 ## Invocation rule (RTS / RTSG)
 
 When the founder says "follow RTS" or "follow RTSG":
+0. Run the DOCUMENT DISSECTION first (Rule 73, the section below):
+   resolve the repo, resolve the ticket id, classify the document, and
+   check it against the disk. Step 0 exists because a document can be
+   complete, correct and pointed at the wrong repo or the wrong id.
+   Do not act on a document before this step.
 1. Read this section.
 2. Trace the current task against the edge classes above.
 3. Suggest ONE highlight and log it to AGENTIC-REGISTRY-HIGHLIGHTS.md
    using the fixed 10-line format, naming the working folder it came
    from. No origin, no entry.
+4. Record every MANDATED FOUNDER ACTION (Rule 74) found in this pass in
+   qwkbrowser/docs/FOUNDERS-ACTIONS.md: the exact ask, why it cannot be done
+   without the founder, the options with a recommendation, and what stays
+   blocked. Then continue with everything that is NOT blocked. A blocker that
+   is not written down is a blocker that was worked around.
 
 ## Related files
 
@@ -522,6 +905,359 @@ When the founder says "follow RTS" or "follow RTSG":
 - ARGUMENTS SECTION RULES (QWK-055)
 - DIAGNOSIS SECTION RULES (QWK-055)
 - SOURCE MODEL (QWK-055)
+
+---
+
+
+---
+
+<!-- BEGIN DOCUMENT-DISSECTION-RULE (Rule 73) -->
+
+# DOCUMENT DISSECTION AND REPO RESOLUTION (Rule 73)
+
+## This rule has no wing prefix, on purpose
+
+Every other id in this ecosystem carries a wing prefix: QWK- for
+qwkbrowser, REG- for the Registry, QM- for Quanthom Mails, BANQ- for
+www.newquanthoms.com. This rule deliberately does NOT.
+
+It is a GLOBAL rule. It is mirrored into every wing, so any wing prefix
+on it would be wrong in every wing but one. It was first written as
+"Rule 73" and that was a defect of exactly the kind this rule exists to
+prevent: a qwkbrowser id sitting in the Registry, in Mails, in Chat and
+in BANQ. It also collided in meaning, because Rule 64 already exists and
+means AGENTS.md is mirrored at docs/MASTER-AGENTS.md.
+
+So it is cited as Rule 73, wing-neutral, the same way the other global
+rules are cited (Rule 16 ASCII-only, Rule 57 machine-readable verify).
+Do not re-prefix it. If you are tempted to write QWK-073, that is the
+bug, not a tidy-up.
+
+## Why this rule exists
+
+Two failures happened on 2026-09-22 and neither was a coding mistake.
+Both were resolved before a single line was written, and both were caught
+only by luck:
+
+1. TWO WINGS NUMBERED THE SAME TICKET ID. The Registry wing allocated its
+   own roadmap from the same QWK-NNN sequence qwkbrowser was already
+   using. "Do QWK-057" meant three different features in three different
+   repos at once: New Conversations Format, Quanthom Mails, and the
+   Registry access model. Any agent that acted on the number without
+   resolving it would have built the right thing in the wrong repo, or
+   the wrong thing in the right one.
+
+2. A COMPLETE SPEC WAS NEVER BUILT. docs/BMF-TRANSITION-MAP-AI-SYSTEM.md
+   was 398 lines of finished product design. No pipeline row referenced
+   it, so no ticket existed, so nothing was scheduled, so nobody built
+   it. The document was correct, complete and completely invisible.
+
+Both failures have one cause: a document was read and acted on without
+first asking WHICH REPO, WHICH ID, and WHICH STATUS.
+
+## The invocation
+
+When the founder says "follow RTS" or "follow RTSG", the agent does the
+RTS work AND runs this dissection on every document the task touches. The
+dissection is not optional. It runs FIRST, before the first edit and
+before the first ticket is cited.
+
+## Step 1 -- Resolve the repo
+
+Ask one question: which repo owns the code this task changes?
+
+- Never assume the current working directory is the right repo. The
+  working directory is where the session opened, not a decision.
+- A ticket id appearing in a repo does not mean that repo owns it. The
+  Registry repo cites qwkbrowser tickets constantly; that makes it a
+  reader, not an owner.
+- Repo names are not proof either. quanthom-mails is email; it is not the
+  chat wing, and it is not the Registry.
+- If two repos could both be correct, the subject of the ticket decides,
+  not the convenience of the session.
+- Record the resolved repo and the reason in the Origin line of the
+  highlight, so the next agent can check the reasoning instead of
+  repeating it.
+
+## Step 2 -- Resolve the ticket id (prefix discipline)
+
+- An id without a prefix is not an id. Never act on a bare "057".
+- ONE PREFIX, ONE WING. The prefix is what makes a number unambiguous:
+  QWK-NNN is qwkbrowser. REG-NNN is quanthom-registry. QM-NNN is
+  quanthom-mails. BANQ-NNN is www.newquanthoms.com.
+- ONE GLOBAL SEQUENCE PER PREFIX. A number is never reused, never
+  re-issued to a second feature, and never allocated by a wing out of
+  another wing's prefix.
+- A wing that needs a new ticket takes the next free number in ITS OWN
+  prefix. It never takes the next number in a neighbour's prefix, however
+  tidy that looks.
+- A number whose feature is finished is marked RELEASED. A released
+  number is not handed to a new feature without saying so; silent reuse
+  is what broke the audit trail in the first place.
+- Before acting, verify. Run scripts/audit-ticket-ids.cjs -- it reads
+  ticket claims across every wing and reports any id claimed by two
+  different features. Zero collisions is the required state. If the
+  count is not zero, fix the ids before doing the task, not after.
+
+## Step 3 -- Dissect the document before trusting it
+
+Classify every document you are about to act on. The class decides what
+you are allowed to do with it.
+
+| Class | Looks like | You may |
+|---|---|---|
+| SPEC | a build-ready design with schema and exit criteria | build it |
+| ROADMAP | "and beyond", a phase list, no schema | plan it; do not build from it |
+| SPEC-READY, not built | spec on disk, zero code on disk | build it, after confirming zero code |
+| BUILT | status says built | verify it; do not rebuild it |
+| ARCHIVE | lives in _archive or is marked historical | read it for reference; never execute it |
+| HISTORICAL / RELEASED | its id was released | never cite the old id for new work |
+| SUPERSEDED | a newer document names it as replaced | read the newer one instead |
+
+Rules that follow from the table:
+
+- A roadmap entry is not a spec. A roadmap line has no schema, no exit
+  criteria and no verify plan, so building one as if it were a design
+  produces unverifiable work. Roadmap items become buildable only when a
+  spec exists.
+- An archived document is not pending work. It records something
+  finished. Executing it re-does completed work and can undo it.
+- When two documents describe the same scope, exactly one is
+  authoritative and the other references it. Never enumerate the same
+  work or restate the same count in two places. A second independent
+  count is a defect, not a second opinion.
+- If a document claims a file exists, the claim must carry a path, and
+  the path must resolve on disk. A claimed path that does not resolve is
+  a phantom; correct the document before building anything from it.
+
+## Step 4 -- Check freshness against the disk
+
+A status line is a claim, not a fact. Before trusting DONE, BUILT or
+SHIPPED:
+
+- Does the file the document names actually exist?
+- Does the endpoint it names appear in the router?
+- Does the table it names appear in the schema?
+- Does the page it names appear in the served HTML?
+
+If the document and the disk disagree, the disk wins, and the document is
+corrected in the same pass. A stale document is worse than a missing one,
+because a missing document sends nobody anywhere while a stale document
+sends the next agent confidently to the wrong place.
+
+## Step 5 -- State the dissection before working
+
+Before the first edit, state in one short block:
+
+- REPO: which repo, and why it is the right one.
+- TICKET: prefix and id, and what that id means in that repo.
+- DOCUMENT: which document is authoritative for this work.
+- STATUS: what is already built, read from the disk.
+- REMAINING: what this task will actually change.
+
+If any line cannot be answered with evidence, STOP and ask the founder.
+A wrong repo and a wrong id are the two cheapest mistakes to prevent and
+the two most expensive to undo, because both are invisible while they are
+being made.
+
+## The archive rule
+
+A repo, wing or document whose work is complete with nothing left must be
+archived. Archiving is not deleting. An archived thing is labelled and
+moved, and it records, in this order:
+
+1. ARCHIVED, with the date.
+2. What it was, in one sentence.
+3. Why it is safe to archive: what remains, which must be nothing.
+4. Where its live work went, if anywhere -- the successor repo or doc.
+5. The ids it held, marked RELEASED, so it is visible that those numbers
+   are free rather than silently reusable.
+
+A finished repo left looking active is a hazard, not a harmless
+leftover: the next agent reads it as work in progress and does the wrong
+task in the wrong place. Archiving is part of finishing, not an
+afterthought to it.
+
+## The machine check
+
+- scripts/audit-ticket-ids.cjs -- one command, every wing. It reads
+  ticket claims from claim position (a table cell, a heading, the start
+  of a line) and reports any id claimed by two different features. Run it
+  before a task that adds or renames a ticket, before archiving anything,
+  and after any renumbering.
+- scripts/fix-ticket-id-collisions.cjs -- dry-run FIRST, always. It
+  prints every proposed change with its file and line. Apply only after
+  reading them, because a mixed document can reference a neighbour wing's
+  ticket and a blind replace would corrupt a real cross-reference.
+
+## Failure modes this rule prevents
+
+| Failure | How it happens | Step that stops it |
+|---|---|---|
+| Wrong repo | the feature exists in two wings | Step 1 |
+| Wrong ticket | a bare number, or a number claimed twice | Step 2 |
+| Wrong task | a roadmap line built as a spec | Step 3 |
+| Rebuilding finished work | a stale DONE claim read as pending | Step 4 |
+| Invisible spec | no ticket points at the spec | Step 3 + Step 5 |
+| Stale repo read as active | a finished repo never archived | The archive rule |
+
+<!-- END DOCUMENT-DISSECTION-RULE (Rule 73) -->
+
+---
+
+<!-- BEGIN FOUNDERS-ACTIONS-RULE (Rule 74) -->
+
+# MANDATED FOUNDER ACTIONS (Rule 74)
+
+> **Canonical copy.** This file is the single source for the rule below. It is
+> mirrored into every agents file in the ecosystem by
+> `qwkbrowser/scripts/apply-founders-actions-rule.cjs`. Edit IT here, then run
+> the script -- never edit a mirror by hand, or the copies drift.
+>
+> **Rule number:** 74 (wing-neutral). It carries no wing prefix on purpose: a
+> mirror of a global rule must not wear one wing's id. The highest global rule
+> number in use before this one was 73; `Rule 64` already means "AGENTS.md is
+> mirrored at docs/MASTER-AGENTS.md". Do not "tidy" this into `QWK-074`.
+
+---
+
+## 1. WHY THIS RULE EXISTS
+
+An agent can build almost anything in this ecosystem on its own. A short list of
+things it cannot build, cannot invent, and must never fake:
+
+- **credentials and keys** it does not hold,
+- **money** decisions (what to charge, what to switch on, live vs test),
+- **legal and consent** text,
+- **irreversible operations** (commits, pushes, deletions, archiving a repo),
+- **trust-boundary changes** (who is allowed to authenticate as whom),
+- **product priority** (which of two good things to do first),
+- **documents and files** only the founder knows the location of.
+
+The failure this rule prevents is specific and it has already happened here. Work
+that needs one of those things gets **quietly worked around**: a flag stays off
+and nobody is told why, a stub is written and shipped as if it were the feature,
+a placeholder balance is rendered as though it were real, or a whole item is
+"finished" in the sense that the part requiring a decision was skipped. The
+blocker then lives only in an agent's reasoning, which is the one place nobody
+reads later.
+
+The whole point of this rule is that **a blocker is a deliverable**. If it cannot
+be done, it must be written down where the founder will see it, in a form
+somebody can act on in ten seconds.
+
+---
+
+## 2. WHAT QUALIFIES AS A MANDATED FOUNDER ACTION
+
+A task item qualifies when it falls into one of these classes:
+
+| # | Class | Examples |
+|---|---|---|
+| 1 | Credentials and secrets | API keys, storage buckets, SMTP, OAuth client secrets, a shared secret that must match in two places |
+| 2 | Money | enabling a paid flow, live vs test keys, prices, refunds, payouts |
+| 3 | Legal, consent and claims | terms, privacy, disclosure wording, anything that promises money |
+| 4 | Irreversible operations | commit, push, delete, archive a repo, destroy a database, revoke a token |
+| 5 | Trust boundary | who authenticates as whom, what a partner may do with a session, where a credential may be stored |
+| 6 | Product priority | choosing between two valid builds when only one should happen first |
+| 7 | Knowledge only the founder holds | the location of a document, an account owner, a business intent |
+
+If an item is class **1-7**, it is a founder action. If it is none of them, it is
+ordinary work: do it, do not queue it.
+
+---
+
+## 3. THE OBLIGATION (this is the part that is mandatory)
+
+**Whoever first identifies a mandated founder action must acquire it.** The
+initiator owns it. There is no "someone will notice".
+
+The initiator must, in this order:
+
+1. **Record it in the queue** -- `qwkbrowser/docs/FOUNDERS-ACTIONS.md` -- in the
+   fixed item format: what is needed, why it cannot be done without the founder,
+   the options with a recommendation, what stays blocked meanwhile, and who asked
+   and when.
+2. **State the exact ask, not the symptom.** "Object storage credentials (R2
+   bucket + access key + secret)" is an ask. "Media upload is broken" is not.
+3. **Name the work it blocks**, so the cost of leaving it unanswered is visible.
+4. **Keep going on everything else.** A queued item blocks its own item and
+   nothing more. It is never a reason to stop the session.
+5. **Mark it resolved** when the founder answers: who, when, what was decided,
+   and the evidence. A denial is a resolution, not a failure.
+
+**Never** guess a credential, invent a number, flip a paid switch on
+speculatively, commit a change the founder has not approved, choose a
+trust-boundary model because it is easier, or ship a stub that renders as though
+the real thing were there. If the honest state is "this button cannot pay yet",
+the button must say so and the queue must say why.
+
+---
+
+## 4. WHAT THE FOUNDER MAY DO
+
+All three outcomes are valid and all three get recorded:
+
+- **GRANT** -- supply the thing (key, decision, approval).
+- **DENY** -- refuse, with or without a reason. The queue records the refusal and
+  the item is closed forever; it must not be re-asked every session.
+- **DEFER** -- not now. The item stays open with the new date or condition
+  attached, and it stays visible as still-open rather than disappearing.
+
+An unanswered item is **OPEN**, never assumed. Silence is not consent, and a
+missing answer never becomes a default.
+
+---
+
+## 5. THE QUEUE'S OWN RULES
+
+- **One queue, ecosystem-wide**, grouped by wing. Not one per repo: a per-repo
+  queue is how an item gets forgotten in the repo nobody opened this week.
+- **Numbered, stable ids** (`FA-01`, `FA-02`, ...). An id is never reused, even
+  after resolution.
+- **Honest status values only:** `OPEN`, `GRANTED`, `DENIED`, `DEFERRED`.
+  No "probably fine".
+- **The summary table comes first** so the whole ask is visible in one screen.
+- **It is a queue, not a spec.** Detail belongs in the owning doc; the queue
+  names the doc and section.
+- If the queue is empty, say so explicitly. An empty queue is a real and useful
+  state; a missing queue is not.
+
+---
+
+## 6. WHEN THIS RULE RUNS
+
+- As **step 4 of RTS/RTSG**, alongside the highlight: any mandated founder action
+  found during a pass goes into the queue in the same pass.
+- At the **start of any session** touching a queued item: read the queue first,
+  so a decided item is not re-litigated and an open one is not forgotten.
+- Before declaring any work **done**: if the honest completion depends on a class
+  1-7 item, the work is `BLOCKED ON FA-nn`, not done.
+
+---
+
+## 7. FAILURE MODES THIS RULE STOPS
+
+| Failure | What it looks like | Which part of this rule stops it |
+|---|---|---|
+| Silent workaround | A flag left off, no reason written anywhere | 3.1 record it, 3.4 keep going but visibly blocked |
+| Fake completion | A stub or placeholder presented as the feature | 3.never-guess clause; blocked work is labelled blocked |
+| Credential invention | A guessed key, a hardcoded value | Class 1 is a founder action, never an assumption |
+| Re-asking forever | The same question every session | 4 -- GRANTED/DENIED are recorded and closed |
+| Blocker lives in chat | "I could not do X" said once in a transcript | The queue is a file, not a message |
+| Stopping everything | The session halts on one open question | 3.4 -- queue it and continue |
+| Wrong repo, wrong task | A document pointing at another wing | Rule 73 (document dissection) runs first |
+
+---
+
+## END OF RULE 74
+
+> Queue: `qwkbrowser/docs/FOUNDERS-ACTIONS.md`
+> Mirror script: `qwkbrowser/scripts/apply-founders-actions-rule.cjs`
+> Related: Rule 73 (document dissection), Rule 64 (agents mirror), Rule 57
+> (machine-readable verify), Rule 16 (commit checkpoints).
+
+<!-- END FOUNDERS-ACTIONS-RULE (Rule 74) -->
 
 ---
 
@@ -922,11 +1658,21 @@ list, search the web for competitive edges and brand it.
 ## Invocation rule (RTS / RTSG)
 
 When the founder says "follow RTS" or "follow RTSG":
+0. Run the DOCUMENT DISSECTION first (Rule 73, the section below):
+   resolve the repo, resolve the ticket id, classify the document, and
+   check it against the disk. Step 0 exists because a document can be
+   complete, correct and pointed at the wrong repo or the wrong id.
+   Do not act on a document before this step.
 1. Read this section.
 2. Trace the current task against the edge classes above.
 3. Suggest ONE highlight and log it to AGENTIC-REGISTRY-HIGHLIGHTS.md
    using the fixed 10-line format, naming the working folder it came
    from. No origin, no entry.
+4. Record every MANDATED FOUNDER ACTION (Rule 74) found in this pass in
+   qwkbrowser/docs/FOUNDERS-ACTIONS.md: the exact ask, why it cannot be done
+   without the founder, the options with a recommendation, and what stays
+   blocked. Then continue with everything that is NOT blocked. A blocker that
+   is not written down is a blocker that was worked around.
 
 ## Related files
 
@@ -947,6 +1693,359 @@ When the founder says "follow RTS" or "follow RTSG":
 - ARGUMENTS SECTION RULES (QWK-055)
 - DIAGNOSIS SECTION RULES (QWK-055)
 - SOURCE MODEL (QWK-055)
+
+---
+
+
+---
+
+<!-- BEGIN DOCUMENT-DISSECTION-RULE (Rule 73) -->
+
+# DOCUMENT DISSECTION AND REPO RESOLUTION (Rule 73)
+
+## This rule has no wing prefix, on purpose
+
+Every other id in this ecosystem carries a wing prefix: QWK- for
+qwkbrowser, REG- for the Registry, QM- for Quanthom Mails, BANQ- for
+www.newquanthoms.com. This rule deliberately does NOT.
+
+It is a GLOBAL rule. It is mirrored into every wing, so any wing prefix
+on it would be wrong in every wing but one. It was first written as
+"Rule 73" and that was a defect of exactly the kind this rule exists to
+prevent: a qwkbrowser id sitting in the Registry, in Mails, in Chat and
+in BANQ. It also collided in meaning, because Rule 64 already exists and
+means AGENTS.md is mirrored at docs/MASTER-AGENTS.md.
+
+So it is cited as Rule 73, wing-neutral, the same way the other global
+rules are cited (Rule 16 ASCII-only, Rule 57 machine-readable verify).
+Do not re-prefix it. If you are tempted to write QWK-073, that is the
+bug, not a tidy-up.
+
+## Why this rule exists
+
+Two failures happened on 2026-09-22 and neither was a coding mistake.
+Both were resolved before a single line was written, and both were caught
+only by luck:
+
+1. TWO WINGS NUMBERED THE SAME TICKET ID. The Registry wing allocated its
+   own roadmap from the same QWK-NNN sequence qwkbrowser was already
+   using. "Do QWK-057" meant three different features in three different
+   repos at once: New Conversations Format, Quanthom Mails, and the
+   Registry access model. Any agent that acted on the number without
+   resolving it would have built the right thing in the wrong repo, or
+   the wrong thing in the right one.
+
+2. A COMPLETE SPEC WAS NEVER BUILT. docs/BMF-TRANSITION-MAP-AI-SYSTEM.md
+   was 398 lines of finished product design. No pipeline row referenced
+   it, so no ticket existed, so nothing was scheduled, so nobody built
+   it. The document was correct, complete and completely invisible.
+
+Both failures have one cause: a document was read and acted on without
+first asking WHICH REPO, WHICH ID, and WHICH STATUS.
+
+## The invocation
+
+When the founder says "follow RTS" or "follow RTSG", the agent does the
+RTS work AND runs this dissection on every document the task touches. The
+dissection is not optional. It runs FIRST, before the first edit and
+before the first ticket is cited.
+
+## Step 1 -- Resolve the repo
+
+Ask one question: which repo owns the code this task changes?
+
+- Never assume the current working directory is the right repo. The
+  working directory is where the session opened, not a decision.
+- A ticket id appearing in a repo does not mean that repo owns it. The
+  Registry repo cites qwkbrowser tickets constantly; that makes it a
+  reader, not an owner.
+- Repo names are not proof either. quanthom-mails is email; it is not the
+  chat wing, and it is not the Registry.
+- If two repos could both be correct, the subject of the ticket decides,
+  not the convenience of the session.
+- Record the resolved repo and the reason in the Origin line of the
+  highlight, so the next agent can check the reasoning instead of
+  repeating it.
+
+## Step 2 -- Resolve the ticket id (prefix discipline)
+
+- An id without a prefix is not an id. Never act on a bare "057".
+- ONE PREFIX, ONE WING. The prefix is what makes a number unambiguous:
+  QWK-NNN is qwkbrowser. REG-NNN is quanthom-registry. QM-NNN is
+  quanthom-mails. BANQ-NNN is www.newquanthoms.com.
+- ONE GLOBAL SEQUENCE PER PREFIX. A number is never reused, never
+  re-issued to a second feature, and never allocated by a wing out of
+  another wing's prefix.
+- A wing that needs a new ticket takes the next free number in ITS OWN
+  prefix. It never takes the next number in a neighbour's prefix, however
+  tidy that looks.
+- A number whose feature is finished is marked RELEASED. A released
+  number is not handed to a new feature without saying so; silent reuse
+  is what broke the audit trail in the first place.
+- Before acting, verify. Run scripts/audit-ticket-ids.cjs -- it reads
+  ticket claims across every wing and reports any id claimed by two
+  different features. Zero collisions is the required state. If the
+  count is not zero, fix the ids before doing the task, not after.
+
+## Step 3 -- Dissect the document before trusting it
+
+Classify every document you are about to act on. The class decides what
+you are allowed to do with it.
+
+| Class | Looks like | You may |
+|---|---|---|
+| SPEC | a build-ready design with schema and exit criteria | build it |
+| ROADMAP | "and beyond", a phase list, no schema | plan it; do not build from it |
+| SPEC-READY, not built | spec on disk, zero code on disk | build it, after confirming zero code |
+| BUILT | status says built | verify it; do not rebuild it |
+| ARCHIVE | lives in _archive or is marked historical | read it for reference; never execute it |
+| HISTORICAL / RELEASED | its id was released | never cite the old id for new work |
+| SUPERSEDED | a newer document names it as replaced | read the newer one instead |
+
+Rules that follow from the table:
+
+- A roadmap entry is not a spec. A roadmap line has no schema, no exit
+  criteria and no verify plan, so building one as if it were a design
+  produces unverifiable work. Roadmap items become buildable only when a
+  spec exists.
+- An archived document is not pending work. It records something
+  finished. Executing it re-does completed work and can undo it.
+- When two documents describe the same scope, exactly one is
+  authoritative and the other references it. Never enumerate the same
+  work or restate the same count in two places. A second independent
+  count is a defect, not a second opinion.
+- If a document claims a file exists, the claim must carry a path, and
+  the path must resolve on disk. A claimed path that does not resolve is
+  a phantom; correct the document before building anything from it.
+
+## Step 4 -- Check freshness against the disk
+
+A status line is a claim, not a fact. Before trusting DONE, BUILT or
+SHIPPED:
+
+- Does the file the document names actually exist?
+- Does the endpoint it names appear in the router?
+- Does the table it names appear in the schema?
+- Does the page it names appear in the served HTML?
+
+If the document and the disk disagree, the disk wins, and the document is
+corrected in the same pass. A stale document is worse than a missing one,
+because a missing document sends nobody anywhere while a stale document
+sends the next agent confidently to the wrong place.
+
+## Step 5 -- State the dissection before working
+
+Before the first edit, state in one short block:
+
+- REPO: which repo, and why it is the right one.
+- TICKET: prefix and id, and what that id means in that repo.
+- DOCUMENT: which document is authoritative for this work.
+- STATUS: what is already built, read from the disk.
+- REMAINING: what this task will actually change.
+
+If any line cannot be answered with evidence, STOP and ask the founder.
+A wrong repo and a wrong id are the two cheapest mistakes to prevent and
+the two most expensive to undo, because both are invisible while they are
+being made.
+
+## The archive rule
+
+A repo, wing or document whose work is complete with nothing left must be
+archived. Archiving is not deleting. An archived thing is labelled and
+moved, and it records, in this order:
+
+1. ARCHIVED, with the date.
+2. What it was, in one sentence.
+3. Why it is safe to archive: what remains, which must be nothing.
+4. Where its live work went, if anywhere -- the successor repo or doc.
+5. The ids it held, marked RELEASED, so it is visible that those numbers
+   are free rather than silently reusable.
+
+A finished repo left looking active is a hazard, not a harmless
+leftover: the next agent reads it as work in progress and does the wrong
+task in the wrong place. Archiving is part of finishing, not an
+afterthought to it.
+
+## The machine check
+
+- scripts/audit-ticket-ids.cjs -- one command, every wing. It reads
+  ticket claims from claim position (a table cell, a heading, the start
+  of a line) and reports any id claimed by two different features. Run it
+  before a task that adds or renames a ticket, before archiving anything,
+  and after any renumbering.
+- scripts/fix-ticket-id-collisions.cjs -- dry-run FIRST, always. It
+  prints every proposed change with its file and line. Apply only after
+  reading them, because a mixed document can reference a neighbour wing's
+  ticket and a blind replace would corrupt a real cross-reference.
+
+## Failure modes this rule prevents
+
+| Failure | How it happens | Step that stops it |
+|---|---|---|
+| Wrong repo | the feature exists in two wings | Step 1 |
+| Wrong ticket | a bare number, or a number claimed twice | Step 2 |
+| Wrong task | a roadmap line built as a spec | Step 3 |
+| Rebuilding finished work | a stale DONE claim read as pending | Step 4 |
+| Invisible spec | no ticket points at the spec | Step 3 + Step 5 |
+| Stale repo read as active | a finished repo never archived | The archive rule |
+
+<!-- END DOCUMENT-DISSECTION-RULE (Rule 73) -->
+
+---
+
+<!-- BEGIN FOUNDERS-ACTIONS-RULE (Rule 74) -->
+
+# MANDATED FOUNDER ACTIONS (Rule 74)
+
+> **Canonical copy.** This file is the single source for the rule below. It is
+> mirrored into every agents file in the ecosystem by
+> `qwkbrowser/scripts/apply-founders-actions-rule.cjs`. Edit IT here, then run
+> the script -- never edit a mirror by hand, or the copies drift.
+>
+> **Rule number:** 74 (wing-neutral). It carries no wing prefix on purpose: a
+> mirror of a global rule must not wear one wing's id. The highest global rule
+> number in use before this one was 73; `Rule 64` already means "AGENTS.md is
+> mirrored at docs/MASTER-AGENTS.md". Do not "tidy" this into `QWK-074`.
+
+---
+
+## 1. WHY THIS RULE EXISTS
+
+An agent can build almost anything in this ecosystem on its own. A short list of
+things it cannot build, cannot invent, and must never fake:
+
+- **credentials and keys** it does not hold,
+- **money** decisions (what to charge, what to switch on, live vs test),
+- **legal and consent** text,
+- **irreversible operations** (commits, pushes, deletions, archiving a repo),
+- **trust-boundary changes** (who is allowed to authenticate as whom),
+- **product priority** (which of two good things to do first),
+- **documents and files** only the founder knows the location of.
+
+The failure this rule prevents is specific and it has already happened here. Work
+that needs one of those things gets **quietly worked around**: a flag stays off
+and nobody is told why, a stub is written and shipped as if it were the feature,
+a placeholder balance is rendered as though it were real, or a whole item is
+"finished" in the sense that the part requiring a decision was skipped. The
+blocker then lives only in an agent's reasoning, which is the one place nobody
+reads later.
+
+The whole point of this rule is that **a blocker is a deliverable**. If it cannot
+be done, it must be written down where the founder will see it, in a form
+somebody can act on in ten seconds.
+
+---
+
+## 2. WHAT QUALIFIES AS A MANDATED FOUNDER ACTION
+
+A task item qualifies when it falls into one of these classes:
+
+| # | Class | Examples |
+|---|---|---|
+| 1 | Credentials and secrets | API keys, storage buckets, SMTP, OAuth client secrets, a shared secret that must match in two places |
+| 2 | Money | enabling a paid flow, live vs test keys, prices, refunds, payouts |
+| 3 | Legal, consent and claims | terms, privacy, disclosure wording, anything that promises money |
+| 4 | Irreversible operations | commit, push, delete, archive a repo, destroy a database, revoke a token |
+| 5 | Trust boundary | who authenticates as whom, what a partner may do with a session, where a credential may be stored |
+| 6 | Product priority | choosing between two valid builds when only one should happen first |
+| 7 | Knowledge only the founder holds | the location of a document, an account owner, a business intent |
+
+If an item is class **1-7**, it is a founder action. If it is none of them, it is
+ordinary work: do it, do not queue it.
+
+---
+
+## 3. THE OBLIGATION (this is the part that is mandatory)
+
+**Whoever first identifies a mandated founder action must acquire it.** The
+initiator owns it. There is no "someone will notice".
+
+The initiator must, in this order:
+
+1. **Record it in the queue** -- `qwkbrowser/docs/FOUNDERS-ACTIONS.md` -- in the
+   fixed item format: what is needed, why it cannot be done without the founder,
+   the options with a recommendation, what stays blocked meanwhile, and who asked
+   and when.
+2. **State the exact ask, not the symptom.** "Object storage credentials (R2
+   bucket + access key + secret)" is an ask. "Media upload is broken" is not.
+3. **Name the work it blocks**, so the cost of leaving it unanswered is visible.
+4. **Keep going on everything else.** A queued item blocks its own item and
+   nothing more. It is never a reason to stop the session.
+5. **Mark it resolved** when the founder answers: who, when, what was decided,
+   and the evidence. A denial is a resolution, not a failure.
+
+**Never** guess a credential, invent a number, flip a paid switch on
+speculatively, commit a change the founder has not approved, choose a
+trust-boundary model because it is easier, or ship a stub that renders as though
+the real thing were there. If the honest state is "this button cannot pay yet",
+the button must say so and the queue must say why.
+
+---
+
+## 4. WHAT THE FOUNDER MAY DO
+
+All three outcomes are valid and all three get recorded:
+
+- **GRANT** -- supply the thing (key, decision, approval).
+- **DENY** -- refuse, with or without a reason. The queue records the refusal and
+  the item is closed forever; it must not be re-asked every session.
+- **DEFER** -- not now. The item stays open with the new date or condition
+  attached, and it stays visible as still-open rather than disappearing.
+
+An unanswered item is **OPEN**, never assumed. Silence is not consent, and a
+missing answer never becomes a default.
+
+---
+
+## 5. THE QUEUE'S OWN RULES
+
+- **One queue, ecosystem-wide**, grouped by wing. Not one per repo: a per-repo
+  queue is how an item gets forgotten in the repo nobody opened this week.
+- **Numbered, stable ids** (`FA-01`, `FA-02`, ...). An id is never reused, even
+  after resolution.
+- **Honest status values only:** `OPEN`, `GRANTED`, `DENIED`, `DEFERRED`.
+  No "probably fine".
+- **The summary table comes first** so the whole ask is visible in one screen.
+- **It is a queue, not a spec.** Detail belongs in the owning doc; the queue
+  names the doc and section.
+- If the queue is empty, say so explicitly. An empty queue is a real and useful
+  state; a missing queue is not.
+
+---
+
+## 6. WHEN THIS RULE RUNS
+
+- As **step 4 of RTS/RTSG**, alongside the highlight: any mandated founder action
+  found during a pass goes into the queue in the same pass.
+- At the **start of any session** touching a queued item: read the queue first,
+  so a decided item is not re-litigated and an open one is not forgotten.
+- Before declaring any work **done**: if the honest completion depends on a class
+  1-7 item, the work is `BLOCKED ON FA-nn`, not done.
+
+---
+
+## 7. FAILURE MODES THIS RULE STOPS
+
+| Failure | What it looks like | Which part of this rule stops it |
+|---|---|---|
+| Silent workaround | A flag left off, no reason written anywhere | 3.1 record it, 3.4 keep going but visibly blocked |
+| Fake completion | A stub or placeholder presented as the feature | 3.never-guess clause; blocked work is labelled blocked |
+| Credential invention | A guessed key, a hardcoded value | Class 1 is a founder action, never an assumption |
+| Re-asking forever | The same question every session | 4 -- GRANTED/DENIED are recorded and closed |
+| Blocker lives in chat | "I could not do X" said once in a transcript | The queue is a file, not a message |
+| Stopping everything | The session halts on one open question | 3.4 -- queue it and continue |
+| Wrong repo, wrong task | A document pointing at another wing | Rule 73 (document dissection) runs first |
+
+---
+
+## END OF RULE 74
+
+> Queue: `qwkbrowser/docs/FOUNDERS-ACTIONS.md`
+> Mirror script: `qwkbrowser/scripts/apply-founders-actions-rule.cjs`
+> Related: Rule 73 (document dissection), Rule 64 (agents mirror), Rule 57
+> (machine-readable verify), Rule 16 (commit checkpoints).
+
+<!-- END FOUNDERS-ACTIONS-RULE (Rule 74) -->
 
 ---
 

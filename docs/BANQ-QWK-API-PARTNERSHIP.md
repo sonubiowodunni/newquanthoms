@@ -92,11 +92,44 @@ dashboard, contact form, QAP integration).
 
 | Key | Value | Set By | Read By |
 |-----|-------|--------|---------|
-| banq_token | QwkBrowser token (string) | login.html JS | js/app.js (BANQ.fetchJson) |
-| banq_user | User object (JSON string) | login.html JS | js/app.js (UI display) |
+| banq_token | BANQ session token (string) | login.html JS / js/app.js | js/app.js (BANQ.fetchJson) |
+| banq_user | User object (JSON string) | login.html JS / js/app.js | js/app.js (UI display) |
 
-Note: banq_token IS a QwkBrowser token. The key name is banq_token to
-keep BANQ's namespace clean, but the value is issued by QwkBrowser.
+**CORRECTED 2026-09-22 (BANQ-024). The original text here read: "banq_token IS a
+QwkBrowser token. The key name is banq_token to keep BANQ's namespace clean, but
+the value is issued by QwkBrowser." That model was built, proved wrong in
+practice, and replaced.**
+
+Why it had to change:
+
+1. A QWK token in the browser is a QWK credential held by a third party. It
+   would let BANQ's page act as the person on QwkBrowser for the token's whole
+   lifetime, and neither side could revoke the other's copy.
+2. It could not support the identity the pages actually promise. BANQ's login
+   compared against its OWN `users` table only, so a real QwkBrowser account was
+   rejected -- the promise on about.html, dashboard.html and the sign-in card was
+   simply false.
+
+What replaced it:
+
+- `banq_token` is BANQ's OWN session token (32 random bytes, stored as
+  SHA-256(token) in BANQ's `sessions` table, 7 days).
+- Identity comes from QwkBrowser in one of two ways: a signed HMAC handoff token
+  (`POST /api/auth/sso/handoff` on the QWK side, verified locally by BANQ with
+  the shared secret -- no network call, so it survives a QWK outage), or a
+  secret-guarded server-to-server credential check
+  (`POST /api/auth/verify-credentials`) for the typed form.
+- The verify endpoint returns a public identity and **no token at all**, so a
+  partner sign-in leaves no QWK session behind.
+- The QWK account is linked to the BANQ row via `users.qwk_user_id` /
+  `qwk_username` with `auth_source='qwk'`. A local account (banqadmin) keeps
+  working locally and can never be shadowed by a QwkBrowser identity.
+
+CONSEQUENCE FOR THE EARN PATH: the proxied `/api/ads/click` and
+`/api/profile/*` calls now carry a BANQ token, which QwkBrowser does not accept
+(401), and would refuse even a valid QWK token from another origin (403
+CSRF_MISSING). That is open item F3 in `docs/BANQ-REMAINING-WORK.md` and it
+needs a founder decision -- it is a trust-boundary choice, not a defect.
 
 ### 2.5 BANQ Admin Account
 
@@ -746,6 +779,7 @@ This is a deployment-time configuration change, not a code change.
 |------|--------|
 | 2026-08-26 | Initial spec created. Auth model: QwkBrowser credentials, token pass-through. BANQ admin kept for BANQ-specific features. |
 | 2026-08-26 | Researched QwkBrowser codebase (ads.js, auth.js, profile.js, db.js). Resolved all 6 open items. Updated field names to match actual QWK API responses. Discovered: no is_admin field (env-based), no QAP endpoint, GET /api/ads/public exists for BANQ, impression only works for google-sourced banners, ad partner self-service endpoint exists. |
+| 2026-09-22 | **Section 2.4 CORRECTED and the identity model rebuilt (BANQ-024).** The pass-through token model was never actually implemented, and could not have worked for sign-in: the login only checked BANQ's own table, so every real QwkBrowser account was rejected. BANQ now verifies identity through QwkBrowser (signed handoff / secret-guarded credential check) and issues its OWN session; the QWK token is never stored and the verify endpoint returns none. Live-proven: the founder's account signs in on 3002 with its QwkBrowser password. **Section 3's proxy design was implemented and found to have three real defects** (hpm v3 mount-path stripping, `express.json()` ordered before the proxy, the SPA fallback answering unknown `/api/*` with HTML) -- now fixed and asserted by `scripts/verify-v1-smoke.cjs`. **F1 answered: the proxied reads were NOT live**, they only returned 200. **F3 opened:** earning with a BANQ session needs a decision (QWK partner reward path vs server-side token exchange); evidence in `docs/BANQ-REMAINING-WORK.md` F3. |
 | 2026-08-26 | QAP architecture revised: QAP is a QwkBrowser core feature, NOT BANQ-only. Table bmf_ad_profiles to be renamed quanthom_ad_profiles. QwkBrowser will own QAP generation and the partner-facing GET /api/ad-profile/qap/:qap endpoint. BANQ proxies to it. Created docs/QAP-RELATED-TASK.md with full task breakdown. |
 
 ---

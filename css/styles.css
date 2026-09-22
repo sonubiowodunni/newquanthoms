@@ -642,6 +642,62 @@ a:hover { text-decoration: underline; }
   .banq-nav { gap: 12px; }
   .banq-nav a { font-size: 11px; }
 }
+/* -- Phone tier: <= 480px (BANQ-RB-001 Section 2) --
+ *
+ * WHY THIS BLOCK EXISTS: the header never wrapped. Measured live at 390px, the
+ * document was 728px wide on a 373px viewport -- so EVERY page scrolled
+ * sideways at phone width, which is the one thing Section 9 explicitly forbids.
+ *
+ * Two causes, both here:
+ *   1. .banq-header-inner is a no-wrap flex row of logo + nav + user badge +
+ *      sign-out button. On a phone those need ~700px and nothing let them wrap.
+ *   2. The nav was only hidden at <= 375px, and the standard's phone tier is
+ *      <= 480px. So the exact band where the header is most crowded -- 376 to
+ *      480, which is most phones -- had no phone rules at all.
+ *
+ * The nav WRAPS here instead of hiding: a billboard site whose navigation
+ * vanishes at 390px is worse than one with a second line. (The 375px rule is
+ * left alone -- it hides the nav on the smallest screens, which remains a
+ * deliberate, documented choice.)
+ *
+ * Values follow BANQ-RB-001 Sections 3.1 and 3.2 (container padding 12px,
+ * page titles 20px, labels 10px).
+ */
+@media (max-width: 480px) {
+  .banq-container { padding: 0 12px; }
+  .banq-layout { padding: 16px 0; gap: 16px; }
+
+  .banq-header-inner {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 56px;
+    padding: 8px 0;
+    gap: 6px 10px;
+  }
+  .banq-logo { font-size: 15px; }
+  .banq-logo img { width: 24px; height: 24px; }
+  .banq-nav { flex-wrap: wrap; gap: 10px; }
+  .banq-nav a { font-size: 10px; letter-spacing: 0.03em; }
+  .banq-user-badge { font-size: 11px; gap: 6px; }
+  .banq-signin-btn { padding: 7px 12px; font-size: 11px; }
+
+  /* BANQ-RB-001 3.2 -- type scale at phone width */
+  .banq-feed-title { font-size: 20px; }
+  .banq-section-title { font-size: 16px; }
+
+  /* NOT HERE, deliberately: the monitor and dashboard phone rules live in their
+   * OWN <style> blocks. Both pages define their classes inline, and an inline
+   * block comes after this stylesheet, so an override written here loses on
+   * equal specificity and is silently dead. That is not a theory -- the monitor
+   * stat value measured 22px at a 390px viewport with the rule below present
+   * here, which is how this comment came to exist. */
+}
+
+/* -- Smallest phones: <= 375px --
+ * Kept AFTER the 480px block on purpose: both match at 375px, and CSS resolves
+ * equal specificity by source order, so the tighter rule must come last or it
+ * is silently overridden by the phone tier above.
+ */
 @media (max-width: 375px) {
   .banq-container { padding: 0 10px; }
   .banq-card-body { padding: 10px 12px; }

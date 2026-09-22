@@ -29,6 +29,7 @@
       <a href="packages.html">Packages</a>
       <a href="about.html">About</a>
       <a href="dashboard.html">Dashboard</a>
+      <a href="monitor.html">Monitor</a>
     </nav>
     <div id="banqUserArea"></div>
   </div>
@@ -137,18 +138,40 @@
     }
   }
 
+  /* Balance display.
+   *
+   * The QwkBrowser read (/profile/me) needs a QWK session token, which a BANQ
+   * sign-in does not have -- so it answers 401 and there is nothing to show.
+   * BANQ's OWN account already holds the balances, synced from QwkBrowser at
+   * the moment of sign-in (the identity bridge writes them onto the mirror
+   * row). Showing those is real data, not a placeholder, and it costs no
+   * request that is guaranteed to fail first.
+   *
+   * If QwkBrowser ever answers (a future token exchange), its number wins,
+   * because it is the live one.
+   */
   function loadBalance() {
     if (!BANQ.signedIn()) return;
-    BANQ.fetchJson('/profile/me').then(function(data) {
-      if (data && data.user) {
-        var el = document.getElementById('banqBalance');
-        if (el) {
-          var qu = data.user.qu_balance || 0;
-          var qc = data.user.qc_balance || 0;
-          el.textContent = qu + ' QU / ' + qc + ' QC';
-        }
+    var el = document.getElementById('banqBalance');
+
+    var mine = BANQ.fetchJson('/auth/me').then(function(data) {
+      if (data && data.user && el) {
+        el.textContent = (data.user.quanthom_unit || 0) + ' QU / ' + (data.user.quanthom_credit || 0) + ' QC';
       }
-    }).catch(function() {});
+      return data;
+    });
+
+    BANQ.qwkFetch('/profile/me').then(function(data) {
+      var p = data && (data.profile || data.user);
+      if (p && el && (p.quanthom_unit !== undefined || p.quanthom_credit !== undefined)) {
+        el.textContent = (p.quanthom_unit || 0) + ' QU / ' + (p.quanthom_credit || 0) + ' QC';
+      }
+    }).catch(function() {
+      // Expected until the reward bridge is open. The mirror values above are
+      // already on screen, so there is nothing to report to the person.
+    });
+
+    return mine;
   }
 
   function renderFeed(banners, filter) {
@@ -227,7 +250,9 @@
     btn.disabled = true;
     btn.textContent = 'Processing...';
     var endpoint = bannerType === 'video' ? '/ads/impression' : '/ads/click';
-    BANQ.fetchJson(endpoint, {
+    // qwkFetch, NOT fetchJson: a QwkBrowser 401 must never sign this person
+    // out of BANQ (see js/app.js).
+    BANQ.qwkFetch(endpoint, {
       method: 'POST',
       body: JSON.stringify({ banner_id: parseInt(bannerId) })
     }).then(function(data) {
@@ -247,12 +272,19 @@
       btn.textContent = 'Click to Earn';
       if (err && err.status === 429) {
         BANQ.toast('Cooling down -- wait a few seconds.', 'error');
-      } else if (err && err.status === 400 && err.message && err.message.indexOf('cooldown') >= 0) {
+      } else if (err && err.status === 400 && ((err.message || '') + (err.error || '')).indexOf('cooldown') >= 0) {
         btn.textContent = 'Come back later';
         btn.style.opacity = '0.45';
         BANQ.toast('Banner on cooldown.', 'info');
+      } else if (err && (err.status === 401 || (err.status === 403 && err.code === 'CSRF_MISSING'))) {
+        // The truth, not "try again": retrying cannot help, because the
+        // QwkBrowser reward bridge is not open to a BANQ session yet. Saying
+        // "try again" would keep people clicking a button that cannot pay.
+        btn.textContent = 'Earning not live yet';
+        btn.style.opacity = '0.45';
+        BANQ.toast(err.reason || 'Reward earning is not open yet.', 'info');
       } else {
-        BANQ.toast('Failed to earn. Try again.', 'error');
+        BANQ.toast((err && err.reason) || 'Failed to earn. Try again.', 'error');
       }
     });
   }
@@ -262,7 +294,7 @@
     var bar = document.getElementById('banqProgressBar');
     var text = document.getElementById('banqProgressText');
     if (!bar || !text) return;
-    BANQ.fetchJson('/ads/clicks/history').then(function(data) {
+    BANQ.qwkFetch('/ads/clicks/history').then(function(data) {
       var history = (data.history || []).filter(function(h) {
         return h.clicked_at && isToday(h.clicked_at);
       });

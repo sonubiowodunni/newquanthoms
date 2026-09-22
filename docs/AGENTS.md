@@ -1,3 +1,29 @@
+
+> **MUST READ -- MANDATED FOUNDER ACTIONS (Rule 74).**
+> Some work CANNOT be done by an agent: credentials and keys, money
+> decisions, legal text, irreversible operations (commit, push, delete,
+> archive), trust-boundary changes, product priority, and knowledge only the
+> founder holds. For any of those, the person who finds the blocker OWNS it:
+> write it in the queue with the exact ask, the options and a recommendation,
+> name what it blocks, then KEEP GOING on everything it does not block.
+> Never guess a credential, never flip a paid switch on speculatively, never
+> present a stub as the feature. The queue is the evidence that a blocker was
+> handed over rather than worked around.
+> Queue: qwkbrowser/docs/FOUNDERS-ACTIONS.md
+> Full rule (canonical): quanthom-registry/docs/FOUNDERS-ACTIONS-RULE.md,
+> and the same text mirrored in quanthom-registry/agents.md.
+
+
+> **MUST READ -- DOCUMENT DISSECTION AND REPO RESOLUTION (Rule 73).**
+> Before acting on any document, resolve WHICH REPO owns the work, WHICH
+> PREFIXED ID the task carries, and WHAT STATUS the document really has
+> (spec, roadmap, archive, released). A complete spec with no ticket is
+> invisible work; a number claimed by two wings is two different tasks.
+> The full rule lives in the canonical copy: quanthom-registry/agents.md,
+> section "DOCUMENT DISSECTION AND REPO RESOLUTION (Rule 73)", with the
+> text kept in quanthom-registry/docs/DISSECTION-RULE.md. Check ids with
+> scripts/audit-ticket-ids.cjs (zero collisions is the required state).
+
 ==============================================================================
   /  \  MANDATORY MEMORY GUIDE BEFORE RUNNING PROVIDED PROMPT
   \  /  ----------------------------------------------------------
@@ -161,7 +187,15 @@ Root: C:\Users\lenovo\Documents\www.newquanthoms.com
    - sessions: id, user_id, token_hash, created_at, expires_at
 
    Auth model:
-   - BANQ owns its own auth. Users create BANQ accounts (not QwkBrowser accounts).
+   - BANQ owns its own SESSIONS. Identity is a different question, and the
+     answer changed on 2026-09-22 (BANQ-024): users sign in WITH THEIR
+     QWKBROWSER ACCOUNT, which is what about.html, dashboard.html and the
+     sign-in card have always promised. QwkBrowser verifies the password (via
+     a signed handoff token, or a secret-guarded server-to-server check) and
+     BANQ issues its own session token into its own sessions table. The QWK
+     token is never stored, and the verify endpoint returns none. Local
+     accounts (banqadmin) still sign in with a local password, and a local
+     username is never shadowed by a QwkBrowser identity.
    - Token stored in localStorage as `banq_token` (NOT `qwk_token`).
    - Bearer auth header on every API call.
    - Session duration: 7 days.
@@ -314,8 +348,13 @@ Before writing any code:
 - Database: SQLite (file-based at data/banq.db). Back up before schema changes.
 - API: Auth routes under /api/auth/* (local). Ad and profile routes proxied
   to QwkBrowser under /api/ads/* and /api/profile/*.
-- BANQ namespace: window.BANQ (defined in js/app.js). All API calls go
-  through BANQ.fetchJson() or BANQ.qwkFetch() (alias).
+- BANQ namespace: window.BANQ (defined in js/app.js). BANQ's OWN routes go
+  through BANQ.fetchJson(). The PROXIED QwkBrowser routes (/api/ads/*,
+  /api/profile/*) go through BANQ.qwkFetch(), which does NOT clear the BANQ
+  session on a 401. They are not interchangeable: fetchJson's 401 handling is
+  right for a BANQ route and wrong for a QwkBrowser one, and aliasing them
+  (which is what the code did until 2026-09-22) signed a person out of BANQ
+  every time they clicked a banner.
 - When adding new routes: add to server.js, add to BANQ-JS.md inventory.
 - When adding new frontend pages: add to this file's inventory, add to
   the navigation in HTML headers.

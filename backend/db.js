@@ -20,6 +20,23 @@ function tokenHash(token) {
   return crypto.createHash('sha256').update(String(token)).digest('hex');
 }
 
+/*
+ * Add a column if it is not there yet.
+ *
+ * Why a helper: SQLite has no `ADD COLUMN IF NOT EXISTS`, and CREATE TABLE IF
+ * NOT EXISTS does NOT add columns to a table that already exists. Without
+ * this, an existing banq.db would silently keep the old shape and every query
+ * touching a new column would fail at runtime instead of at boot.
+ */
+async function ensureColumn(table, column, type) {
+  const info = await db.execute('PRAGMA table_info(' + table + ')');
+  const has = info.rows.some(function (r) { return r.name === column; });
+  if (has) return false;
+  await db.execute('ALTER TABLE ' + table + ' ADD COLUMN ' + column + ' ' + type);
+  console.log('[BANQ] ' + table + ': added column ' + column);
+  return true;
+}
+
 // -- Schema init (idempotent -- runs every boot) --
 async function init() {
   // Users table
@@ -93,6 +110,28 @@ async function init() {
     sql: `SELECT id FROM users WHERE username = ?`,
     args: [adminAccount.username]
   })).rows[0];
+
+  /*
+   * QwkBrowser identity link (BANQ-022).
+   *
+   * BANQ's own pages and its own about.html have always said "sign in with your
+   * QwkBrowser account", and the audience genuinely has one -- but the login
+   * only ever checked the local users table, which holds banqadmin and nobody
+   * else. So a real QwkBrowser account was rejected as invalid credentials.
+   *
+   * These columns are the fix's foundation. A BANQ user row can now be a
+   * MIRROR of a QwkBrowser identity:
+   *   auth_source = 'qwk'    -> the QwkBrowser account is the authority
+   *   auth_source = 'local'  -> a BANQ-only account (banqadmin), unaffected
+   *   qwk_user_id / qwk_username -> the link, so a rename on the QWK side does
+   *                                not orphan the BANQ row
+   *   last_sso_at -> when a signed handoff token last authenticated this user
+   */
+  await ensureColumn('users', 'qwk_user_id', 'INTEGER');
+  await ensureColumn('users', 'qwk_username', 'TEXT');
+  await ensureColumn('users', 'auth_source', "TEXT DEFAULT 'local'");
+  await ensureColumn('users', 'last_sso_at', 'DATETIME');
+  await db.execute(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_qwk_id ON users(qwk_user_id) WHERE qwk_user_id IS NOT NULL`);
 
   if (!adminExists) {
     const pwHash = await bcrypt.hash(adminAccount.password, 10);
