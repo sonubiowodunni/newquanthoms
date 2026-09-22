@@ -663,6 +663,23 @@ a:hover { text-decoration: underline; }
  * Values follow BANQ-RB-001 Sections 3.1 and 3.2 (container padding 12px,
  * page titles 20px, labels 10px).
  */
+/* ---------------------------------------------------------------------------
+ * READ THIS BEFORE ADDING A RULE HERE (a real bug, not a style preference)
+ *
+ * Some pages in this project carry their OWN <style> block (monitor.html is
+ * one). A page-level <style> is parsed after this file, so at equal
+ * specificity IT WINS. A rule added here for a class those pages style
+ * themselves will look correct in the source, ship, and never apply.
+ *
+ * That is exactly what happened during the mobile fix: a <=480px tier was
+ * written here for the monitor's own classes and was dead on arrival. It was
+ * only caught by reading the COMPUTED style back from a 390px viewport rather
+ * than trusting the stylesheet. The correct home for those rules is the page's
+ * own <style> block -- which is why some of them live in monitor.html.
+ *
+ * Known debt (filed in the registry): the pages that carry their own <style>
+ * blocks should eventually share one stylesheet, so a rule has one home.
+ * --------------------------------------------------------------------------- */
 @media (max-width: 480px) {
   .banq-container { padding: 0 12px; }
   .banq-layout { padding: 16px 0; gap: 16px; }

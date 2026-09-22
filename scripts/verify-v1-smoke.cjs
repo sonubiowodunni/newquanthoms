@@ -147,6 +147,29 @@ async function main() {
     'status ' + profile.status + ' (502 would mean the proxy target is wrong)');
   ok('the profile proxy answers JSON, never a web page', !profile.isHtml);
 
+  /* CONTENT TYPE ON EVERY PROXIED ROUTE -- the founder's requirement, and the
+   * reason it is a loop rather than one assertion:
+   *
+   * All three 2026-09-22 defects returned HTTP 200 with the wrong BODY. A
+   * status-code check cannot see that class of failure, so every proxied path
+   * is asserted on its content type here. If a future change makes the proxy
+   * forward a wrong path again, QwkBrowser's SPA fallback will answer with
+   * HTML, and this section fails instead of the feed quietly going empty. */
+  const PROXIED = [
+    '/api/ads/public?limit=1',
+    '/api/ads/eligible',
+    '/api/profile/me',
+    '/api/profile/token-summary',
+    '/api/ads/clicks/history',
+    '/api/ad-profile/QAP-DOES-NOT-EXIST'
+  ];
+  for (const p of PROXIED) {
+    const r = await get(p);
+    ok(p + ' answers JSON (not a web page, whatever the status)',
+      /application\/json/.test(r.type) && !r.isHtml,
+      'status ' + r.status + ' content-type ' + r.type);
+  }
+
   section('4. SPA FALLBACK STILL WORKS FOR PAGES');
   const unknownPage = await get('/some-deep-link-that-is-not-a-file');
   ok('an unknown page route still serves the app shell',
@@ -166,6 +189,33 @@ async function main() {
     serverSrc.indexOf("require('./backend/load-env').load()") > -1);
   ok('the proxy is registered BEFORE express.json() (otherwise POSTs hang)',
     serverSrc.indexOf('app.use(createProxyMiddleware') < serverSrc.indexOf('app.use(express.json()'));
+
+  /* SECTION 5b -- the dead-rule guard.
+   *
+   * A page whose classes are defined in its OWN <style> block cannot be
+   * overridden from css/styles.css at equal specificity: the browser applies
+   * the linked stylesheet FIRST, so the inline rule wins and the "override"
+   * does nothing. That happened here -- a <=480px tier was added to
+   * styles.css for the monitor's stat value and the value still measured 22px
+   * at a 390px viewport, with the fix present.
+   *
+   * This guard is deliberately narrow: it fails on the two page-owned prefixes
+   * that exist today, so it cannot produce false positives, and it names the
+   * owning page in the failure so the fix is obvious. Extend the list when a
+   * page grows its own prefixed style block. */
+  section('5b. PAGE-OWNED CLASSES ARE NOT OVERRIDDEN FROM THE SHARED STYLESHEET');
+  const sharedCss = fs.readFileSync(path.join(__dirname, '..', 'css', 'styles.css'), 'utf8');
+  const PAGE_OWNED = [
+    { prefix: 'banq-mon-', owner: 'monitor.html' },
+    { prefix: 'banq-dash-', owner: 'dashboard.html' }
+  ];
+  for (const owned of PAGE_OWNED) {
+    const hit = sharedCss.split('\n').find(function (line) {
+      return line.indexOf('.' + owned.prefix) > -1 && line.indexOf('{') > -1;
+    });
+    ok('css/styles.css defines no .' + owned.prefix + '* rule (those belong to ' + owned.owner + ')',
+      !hit, hit ? 'found: ' + hit.trim().slice(0, 90) : '');
+  }
 
   section('6. DATABASE');
   const dbPath = path.join(__dirname, '..', 'data', 'banq.db');
