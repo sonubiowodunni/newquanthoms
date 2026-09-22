@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0b10" />
+<title>Campaign Monitor -- New Quanthoms</title>
+<link rel="icon" type="image/svg+xml" href="assets/logo.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/styles.css" />
+<script src="js/app.js"></script>
+<style>
+/* Monitor-specific styles. Prefix kept: banq-mon-. */
+.banq-mon-locked {
+  background: linear-gradient(180deg, rgba(240,163,64,0.10), rgba(240,163,64,0.03));
+  border: 1px solid rgba(240,163,64,0.30);
+  border-radius: 16px;
+  padding: 28px;
+  margin-bottom: 20px;
+}
+.banq-mon-locked h2 {
+  font-family: var(--font-d); font-size: 22px; font-weight: 800;
+  color: var(--accent); margin-bottom: 8px;
+}
+.banq-mon-locked p { font-size: 13px; color: var(--text2); line-height: 1.65; max-width: 720px; }
+.banq-mon-fee {
+  font-family: var(--font-d); font-size: 34px; font-weight: 800;
+  color: var(--text); margin: 14px 0 2px;
+}
+.banq-mon-fee span { font-size: 13px; font-family: var(--font-m); color: var(--muted); font-weight: 400; }
+.banq-mon-unlocks {
+  display: grid; grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 8px 20px; margin: 18px 0; padding: 0; list-style: none;
+}
+.banq-mon-unlocks li {
+  font-size: 12px; color: var(--text2); font-family: var(--font-m);
+  padding-left: 16px; position: relative;
+}
+.banq-mon-unlocks li:before {
+  content: '+'; position: absolute; left: 0; color: var(--accent); font-weight: 700;
+}
+.banq-mon-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; border-bottom: 1px solid var(--border2); }
+.banq-mon-tab {
+  background: none; border: none; border-bottom: 2px solid transparent;
+  color: var(--text2); font-family: var(--font-m); font-size: 12px; font-weight: 600;
+  padding: 10px 14px; cursor: pointer; transition: all 0.15s;
+}
+.banq-mon-tab:hover { color: var(--text); }
+.banq-mon-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.banq-mon-panel { display: none; }
+.banq-mon-panel.active { display: block; }
+.banq-mon-card {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 14px; padding: 18px; margin-bottom: 14px;
+}
+.banq-mon-card h3 {
+  font-family: var(--font-d); font-size: 13px; font-weight: 700;
+  margin-bottom: 4px; color: var(--text);
+}
+.banq-mon-sub { font-size: 11px; color: var(--muted); font-family: var(--font-m); margin-bottom: 14px; }
+.banq-mon-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.banq-mon-stat { background: var(--card); border: 1px solid var(--border2); border-radius: 12px; padding: 14px; }
+.banq-mon-stat .l { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: var(--font-m); margin-bottom: 6px; }
+.banq-mon-stat .v { font-size: 22px; font-weight: 700; font-family: var(--font-d); color: var(--text); }
+.banq-mon-table { width: 100%; border-collapse: collapse; }
+.banq-mon-table th {
+  text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--muted); font-family: var(--font-m); padding: 8px 10px; border-bottom: 1px solid var(--border2);
+}
+.banq-mon-table td {
+  padding: 10px; font-size: 12px; color: var(--text);
+  border-bottom: 1px solid var(--border); font-family: var(--font-m); vertical-align: top;
+}
+.banq-mon-chip {
+  display: inline-block; font-size: 10px; font-family: var(--font-m); font-weight: 600;
+  padding: 3px 8px; border-radius: 5px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.banq-mon-chip.healthy, .banq-mon-chip.strong, .banq-mon-chip.ready { background: rgba(90,200,130,0.14); color: #5ac882; }
+.banq-mon-chip.watch, .banq-mon-chip.stable, .banq-mon-chip.moderate, .banq-mon-chip.medium { background: rgba(240,163,64,0.14); color: var(--accent); }
+.banq-mon-chip.needs_attention, .banq-mon-chip.declining, .banq-mon-chip.high { background: rgba(240,120,90,0.16); color: #f0785a; }
+.banq-mon-chip.critical { background: rgba(240,80,80,0.18); color: #f05050; }
+.banq-mon-chip.info, .banq-mon-chip.insufficient_data, .banq-mon-chip.low { background: rgba(140,150,170,0.14); color: var(--text2); }
+.banq-mon-bar { height: 6px; border-radius: 3px; background: var(--surface); overflow: hidden; margin-top: 6px; }
+.banq-mon-bar i { display: block; height: 100%; background: var(--accent); }
+.banq-mon-funnel { display: flex; flex-direction: column; gap: 6px; }
+.banq-mon-funnel-row { display: grid; grid-template-columns: 180px 1fr 90px 70px; gap: 10px; align-items: center; font-family: var(--font-m); font-size: 11px; }
+.banq-mon-funnel-bar { height: 22px; background: var(--surface); border-radius: 4px; overflow: hidden; }
+.banq-mon-funnel-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), rgba(240,163,64,0.35)); }
+.banq-mon-note { border-left: 2px solid var(--border2); padding: 8px 12px; margin-bottom: 10px; }
+.banq-mon-note.internal { border-left-color: #f0785a; }
+.banq-mon-note .who { font-size: 10px; color: var(--muted); font-family: var(--font-m); text-transform: uppercase; letter-spacing: 0.05em; }
+.banq-mon-note .msg { font-size: 12px; color: var(--text2); margin-top: 4px; line-height: 1.55; }
+.banq-mon-tl { font-family: var(--font-m); font-size: 11px; color: var(--text2); padding: 6px 0; border-bottom: 1px solid var(--border); }
+.banq-mon-tl .t { color: var(--muted); margin-right: 10px; }
+.banq-mon-warn {
+  background: rgba(240,120,90,0.08); border: 1px solid rgba(240,120,90,0.25);
+  border-radius: 10px; padding: 12px 14px; font-size: 12px; color: #f0a08a;
+  font-family: var(--font-m); line-height: 1.55; margin-bottom: 12px;
+}
+.banq-mon-note-lock { font-size: 11px; color: var(--muted); font-family: var(--font-m); }
+.banq-mon-input {
+  background: var(--surface); border: 1px solid var(--border2); border-radius: 8px;
+  color: var(--text); font-family: var(--font-m); font-size: 12px; padding: 9px 11px; width: 100%; outline: none;
+}
+.banq-mon-input:focus { border-color: var(--accent); }
+.banq-mon-btn {
+  background: var(--accent); border: none; color: #0a0b10; font-family: var(--font-b);
+  font-weight: 700; font-size: 12px; padding: 9px 18px; border-radius: 8px; cursor: pointer;
+}
+.banq-mon-btn:hover { filter: brightness(1.1); }
+.banq-mon-btn.ghost { background: none; border: 1px solid var(--border2); color: var(--text2); }
+.banq-mon-btn.ghost:hover { border-color: var(--accent); color: var(--accent); }
+@media (max-width: 768px) {
+  .banq-mon-stats { grid-template-columns: 1fr 1fr; }
+  .banq-mon-unlocks { grid-template-columns: 1fr; }
+  .banq-mon-funnel-row { grid-template-columns: 120px 1fr 70px 50px; }
+}
+
+/* Phone tier (BANQ-RB-001 Section 2: <= 480px).
+ *
+ * THESE RULES BELONG IN THIS FILE, NOT IN css/styles.css. Every banq-mon-*
+ * class is defined in this inline block, which the browser applies AFTER the
+ * linked stylesheet -- so an equally specific override in styles.css LOSES and
+ * is dead code. Measured proof: the stat value rendered 22px at a 390px
+ * viewport while a `<=480px` rule for it sat in styles.css doing nothing.
+ */
+@media (max-width: 480px) {
+  /* BANQ-RB-001 3.5 -- stat value 18px, label 9px, tighter gap */
+  .banq-mon-stat { padding: 11px; }
+  .banq-mon-stat .v { font-size: 18px; }
+  .banq-mon-stat .l { font-size: 9px; }
+  .banq-mon-stats { gap: 8px; margin-bottom: 12px; }
+
+  /* A wide data table cannot reflow, so it scrolls INSIDE its own box instead
+   * of pushing the whole page sideways. */
+  .banq-mon-table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+  /* A four-column funnel row has no room for four columns at this width; the
+   * label, the bar and the two figures read better stacked than crushed. */
+  .banq-mon-funnel-row { grid-template-columns: 1fr; gap: 3px; }
+  .banq-mon-card { padding: 14px; }
+  .banq-mon-fee { font-size: 28px; }
+  .banq-mon-locked { padding: 18px; }
+  .banq-mon-locked h2 { font-size: 19px; }
+  .banq-mon-tabs { gap: 4px; }
+  .banq-mon-tab { padding: 9px 11px; font-size: 11px; white-space: nowrap; }
+}
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="banq-header">
+  <div class="banq-container banq-header-inner">
+    <a href="/" class="banq-logo">
+      <img src="assets/logo.svg" alt="BANQ" />
+      <span>New Quanthoms</span>
+    </a>
+    <nav class="banq-nav">
+      <a href="/">Feed</a>
+      <a href="billboards.html">Billboards</a>
+      <a href="packages.html">Packages</a>
+      <a href="about.html">About</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="monitor.html">Monitor</a>
+    </nav>
+    <div id="banqUserArea"></div>
+  </div>
+</header>
+
+<div class="banq-container" style="padding:24px 20px">
+  <div id="banqMonContent">
+    <!-- Placeholder before the first fetch (Rules 14, 33, 35) -->
+    <div class="banq-empty">
+      <div class="banq-empty-title">Loading campaign monitor...</div>
+      <div class="banq-empty-desc">Checking your BANQ AD SERVICE status.</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/monitor.js"></script>
+</body>
+</html>
